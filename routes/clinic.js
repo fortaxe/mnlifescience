@@ -1,9 +1,9 @@
-import express from 'express';
-import { createClinic } from "../controllers/Clinic.js";
-import authMiddleware from '../middleware/auth.js';
+// import express from 'express';
+// import { createClinic } from "../controllers/Clinic.js";
+// import authMiddleware from '../middleware/auth.js';
 
-const router = express.Router();
+// const router = express.Router();
 
-router.post('/createClinic', authMiddleware('mr'), createClinic);
+// router.post('/createClinic', authMiddleware('mr'), createClinic);
 
-export default router;
+// export default router;
