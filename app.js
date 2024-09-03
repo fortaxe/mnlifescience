@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import authRoutes from "./routes/auth.js";
 import adminRoutes from "./routes/admin.js";
-import clinicRoutes from "./routes/clinic.js";
+// import clinicRoutes from "./routes/clinic.js";
 
 dotenv.config(); // Load environment variables from .env file
 
@@ -15,7 +15,7 @@ app.use(express.json());
 // Routes
 app.use("/api", authRoutes);
 app.use("/api", adminRoutes);
-app.use("/api", clinicRoutes);
+// app.use("/api", clinicRoutes);
 
 app.get("/", (req, res) => {
     res.json({ message: "Hello World from backend"})
