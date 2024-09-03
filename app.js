@@ -17,9 +17,9 @@ app.use("/api", authRoutes);
 app.use("/api", adminRoutes);
 app.use("/api", hospitalRoutes);
 
-app.get("/", (req, res) => {
-    res.json({ message: "Hello World from backend"})
-})
+// app.get("/", (req, res) => {
+//     res.json({ message: "Hello World from backend"})
+// })
 
 // Database connection
 mongoose

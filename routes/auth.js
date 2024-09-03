@@ -4,7 +4,7 @@ import authMiddleware from '../middleware/auth.js';
 
 const router = express.Router();
 
-router.post('/admin/signin', adminSignin);
+router.post('/', adminSignin);
 router.post('/user/signin', mrSignin);
 router.post('/admin/create-mr', authMiddleware('admin'), createMR);
 router.post('/admin/create', createAdmin);
