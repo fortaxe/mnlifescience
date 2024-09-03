@@ -17,6 +17,10 @@ app.use("/api", authRoutes);
 app.use("/api", adminRoutes);
 app.use("/api", clinicRoutes);
 
+app.get("/", (req, res) => {
+    res.json({ message: "Hello World from backend"})
+})
+
 // Database connection
 mongoose
     .connect(process.env.MONGO_URL, {
