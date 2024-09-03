@@ -2,7 +2,7 @@ import Clinic from '../models/Clinic.js';
 
 
 // Create Clinic/Lead Form
-export const createClinic = async (req, res) => {
+export const createHospital = async (req, res) => {
     const { doctorName, doctorNumber, speciality, pharmacyName, pharmacyNumber, areaName, pincode } = req.body;
 
     // Validation checks for pincode and phone numbers
