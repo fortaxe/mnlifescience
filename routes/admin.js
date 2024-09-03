@@ -5,9 +5,9 @@ import authMiddleware from '../middleware/auth.js';
 const router = express.Router();
 
 // Route to get all MRs - accessible only to admin
-router.get('/getMrs', authMiddleware('admin'), getAllMRs);
+router.get('/getMrs',  getAllMRs);
 
 // Route to get all Clinics/Lead Forms - accessible only to admin
-router.get('/getClinics', authMiddleware('admin'),  getAllClinics);
+router.get('/getClinics',   getAllClinics);
 
 export default router;
