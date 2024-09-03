@@ -1,5 +1,6 @@
 import Clinic from '../models/Clinic.js';
 
+
 // Create Clinic/Lead Form
 export const createClinic = async (req, res) => {
     const { doctorName, doctorNumber, speciality, pharmacyName, pharmacyNumber, areaName, pincode } = req.body;
