@@ -119,7 +119,7 @@ export const editHospital = async (req, res) => {
             doctorNumber: numDoctorNumber,
             speciality,
             pharmacyName,
-            pharmacyNumber: numDoctorNumber,
+            pharmacyNumber: numPharmacyNumber,
             areaName,
             pincode
         }, { new: true }); // Returns the updated document
