@@ -19,8 +19,6 @@ export const adminSignin = async (req, res) => {
     }
 };
 
-
-
 // MR (User) Signin
 export const mrSignin = async (req, res) => {
     try {
