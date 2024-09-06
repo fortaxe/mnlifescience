@@ -92,29 +92,34 @@ export const editHospital = async (req, res) => {
         if (!clinic) {
             return res.status(404).json({ message: 'Doctor not found' });
         }
+        
+        // Convert to numbers for comparison
+        const numDoctorNumber = doctorNumber ? Number(doctorNumber) : null;
+        const numPharmacyNumber = pharmacyNumber ? Number(pharmacyNumber) : null;
 
         // Check for duplicate doctorNumber or pharmacyNumber
-        if (doctorNumber && doctorNumber !== clinic.doctorNumber) {
-            const existingDoctor = await Clinic.findOne({ doctorNumber });
+        if (numDoctorNumber && numDoctorNumber !== clinic.doctorNumber) {
+            const existingDoctor = await Clinic.findOne({ doctorNumber: numDoctorNumber });
             if (existingDoctor) {
                 return res.status(400).json({ message: 'Another doctor with this doctor number already exists' });
             }
         }
 
-        if (pharmacyNumber && pharmacyNumber !== clinic.pharmacyNumber) {
-            const existingPharmacy = await Clinic.findOne({ pharmacyNumber });
+        if (numPharmacyNumber && numPharmacyNumber !== clinic.pharmacyNumber) {
+            const existingPharmacy = await Clinic.findOne({ pharmacyNumber: numPharmacyNumber });
             if (existingPharmacy) {
-                return res.status(400).json({ message: 'Another doctor with this pharmacy number already exists' });
+                return res.status(400).json({ message: 'Another pharmacy with this number already exists' });
             }
         }
+
 
         // Using findByIdAndUpdate to update the clinic
         await Clinic.findByIdAndUpdate(id, {
             doctorName,
-            doctorNumber,
+            doctorNumber: numDoctorNumber,
             speciality,
             pharmacyName,
-            pharmacyNumber,
+            pharmacyNumber: numDoctorNumber,
             areaName,
             pincode
         }, { new: true }); // Returns the updated document
