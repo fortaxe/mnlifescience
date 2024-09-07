@@ -23,7 +23,7 @@ export const adminSignin = async (req, res) => {
 export const mrSignin = async (req, res) => {
     try {
         const { email, password } = req.body;
-        const mr = await MR.findOne({ email, role: 'mr' });
+        const mr = await MR.findOne({ email, role: 'mr' }).populate("clinics");
 
         if (!mr || !(await bcrypt.compare(password, mr.password))) {
             return res.status(400).send('Invalid credentials');

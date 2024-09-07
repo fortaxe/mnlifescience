@@ -1,5 +1,5 @@
 import Clinic from '../models/Clinic.js';
-
+import MR from "../models/MR.js";
 
 // Create Clinic/Lead Form
 export const createHospital = async (req, res) => {
@@ -43,7 +43,27 @@ export const createHospital = async (req, res) => {
         });
 
         await clinic.save();
-        res.status(201).json({ message: 'Clinic created successfully' });
+
+        //  // Append the newly created clinic's ID to the MR's clinics array
+        //  await MR.findByIdAndUpdate(req.user.id, { $push: { clinics: clinic._id } });
+        res.status(201).json({ clinic });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+// Get all clinics
+export const getAllClinics = async (req, res) => {
+    try {
+        // Fetch the MR document including the clinics array
+        const mr = await MR.findById(req.user.id).populate('clinics');
+
+        if (!mr) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Return the clinics associated with the user
+        res.status(200).json(mr.clinics);
     } catch (error) {
         res.status(500).json({ message: 'Server error' });
     }

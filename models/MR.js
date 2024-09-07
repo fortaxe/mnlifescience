@@ -11,6 +11,7 @@ const mrSchema = new mongoose.Schema({
    
     area: String,
     code: String,
+    clinics: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Clinic' }],
     role: { type: String, enum: ['admin', 'mr'], default: 'mr' }, // role field to distinguish between admin and MR
 });
 
