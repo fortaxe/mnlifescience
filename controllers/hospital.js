@@ -44,8 +44,8 @@ export const createHospital = async (req, res) => {
 
         await clinic.save();
 
-        //  // Append the newly created clinic's ID to the MR's clinics array
-        //  await MR.findByIdAndUpdate(req.user.id, { $push: { clinics: clinic._id } });
+         // Append the newly created clinic's ID to the MR's clinics array
+         await MR.findByIdAndUpdate(req.user.id, { $push: { clinics: clinic._id } });
         res.status(201).json({ clinic });
     } catch (error) {
         res.status(500).json({ message: 'Server error' });
