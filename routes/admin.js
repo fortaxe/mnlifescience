@@ -1,5 +1,5 @@
 import express from 'express';
-import { getAllMRs, getAllClinics } from '../controllers/admin.js';
+import { getAllMRs, getAllClinics, adminEditClinic } from '../controllers/admin.js';
 import authMiddleware from '../middleware/auth.js';
 
 const router = express.Router();
@@ -9,5 +9,8 @@ router.get('/getMrs', authMiddleware('admin'), getAllMRs);
 
 // Route to get all Clinics/Lead Forms - accessible only to admin
 router.get('/getClinics', authMiddleware('admin'),  getAllClinics);
+
+router.patch('/admin/edit-clinic', authMiddleware('admin'), adminEditClinic);
+
 
 export default router;

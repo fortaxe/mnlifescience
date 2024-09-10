@@ -20,3 +20,28 @@ export const getAllClinics = async (req, res) => {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
+
+// Update Doctor Meeting & Lead Form Priority
+export const adminEditClinic = async (req, res) => {
+    const { id, meetingStatus, leadPriority } = req.body; 
+
+    try {
+        // Find the clinic by its ID
+        const clinic = await Clinic.findById(id);
+
+        if (!clinic) {
+            return res.status(404).json({ message: 'Doctor not found' });
+        }
+
+        // Update only meetingStatus and leadPriority by admin
+        clinic.meetingStatus = meetingStatus || clinic.meetingStatus;
+        clinic.leadPriority = leadPriority || clinic.leadPriority;
+
+        await clinic.save();
+
+        res.status(200).json({ message: 'Clinic updated successfully', clinic });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+

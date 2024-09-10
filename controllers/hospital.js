@@ -56,7 +56,10 @@ export const createHospital = async (req, res) => {
 export const getAllClinics = async (req, res) => {
     try {
         // Fetch the MR document including the clinics array
-        const mr = await MR.findById(req.user.id).populate('clinics');
+        const mr = await MR.findById(req.user.id).populate({
+            path: 'clinics',
+            select: '-meetingStatus -leadPriority' // Exclude these fields
+        });
 
         if (!mr) {
             return res.status(404).json({ message: 'User not found' });
@@ -75,7 +78,7 @@ export const getHospital = async (req, res) => {
         // Find the clinic by its ID
         const { id } = req.params;
 
-        const clinic = await Clinic.findById(id);
+        const clinic = await Clinic.findById(id).select('-meetingStatus -leadPriority');
     
         if (!clinic) {
             return res.status(401).json({ msg: "Doctor not found!"})
