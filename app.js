@@ -14,7 +14,7 @@ const app = express();
 const allowedOrigins = [
   'https://mnlife.vercel.app',
   'https://mr.mnlifescience.com',
-  'https://mnlife-ten.vercel.app/'
+  'https://mnlife-ten.vercel.app'
 ];
 
 app.use(cors({

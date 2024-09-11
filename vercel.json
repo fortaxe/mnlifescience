@@ -11,7 +11,7 @@
       "src": "/(.*)",
       "dest": "/app.js",
       "headers": {
-        "Access-Control-Allow-Origin": "https://mnlife.vercel.app, https://mr.mnlifescience.com, https://mnlife-ten.vercel.app/",
+        "Access-Control-Allow-Origin": "https://mnlife.vercel.app, https://mr.mnlifescience.com, https://mnlife-ten.vercel.app",
         "Access-Control-Allow-Methods": "GET,POST,PATCH,DELETE",
         "Access-Control-Allow-Headers": "Content-Type, Authorization",
         "Access-Control-Allow-Credentials": "true"
