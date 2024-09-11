@@ -1,6 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import cors from 'cors';
 import authRoutes from "./routes/auth.js";
 import adminRoutes from "./routes/admin.js";
 import hospitalRoutes from "./routes/hospital.js";
@@ -8,6 +9,13 @@ import hospitalRoutes from "./routes/hospital.js";
 dotenv.config(); // Load environment variables from .env file
 
 const app = express();
+
+// CORS configuration
+app.use(cors({
+    origin: 'https://mnlife.vercel.app', // Allow only your frontend's origin
+    methods: ['GET', 'POST', 'PATCH', 'DELETE'], // Allow specific HTTP methods
+    credentials: true // Enable credentials (if needed, such as for cookies)
+  }));
 
 // Middleware to parse JSON
 app.use(express.json());
