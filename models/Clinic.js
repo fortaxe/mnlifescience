@@ -25,6 +25,8 @@ const clinicSchema = new mongoose.Schema({
         default: 'Cold' 
     },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'MR', required: true }
-});
+},
+{ timestamps: true } 
+);
 
 export default mongoose.model('Clinic', clinicSchema);

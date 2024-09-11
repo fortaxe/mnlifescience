@@ -41,6 +41,7 @@ export const adminEditClinic = async (req, res) => {
 
         res.status(200).json({ message: 'Clinic updated successfully', clinic });
     } catch (error) {
+        console.error('Error updating clinic:', error);
         res.status(500).json({ message: 'Server error' });
     }
 };
