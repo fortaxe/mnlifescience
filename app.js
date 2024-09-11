@@ -13,7 +13,8 @@ const app = express();
 // CORS configuration
 const allowedOrigins = [
   'https://mnlife.vercel.app',
-  'https://mr.mnlifescience.com'
+  'https://mr.mnlifescience.com',
+  'https://mnlife-ten.vercel.app/'
 ];
 
 app.use(cors({
