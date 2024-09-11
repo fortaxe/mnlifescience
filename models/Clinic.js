@@ -1,19 +1,29 @@
 import mongoose from 'mongoose';
 
 const clinicSchema = new mongoose.Schema({
-    doctorName:  String ,
+    doctorName: {
+        type: String,
+        required: true
+    },
     doctorNumber:  {
         type: Number,
-        unique: true
+        unique: true,
+        required: true
     } ,
-    speciality:  String ,
+    speciality:  {
+        type: String,
+        required: true
+    },
     pharmacyName:  String ,
-    pharmacyNumber:   {
+    pharmacyNumber:  {
         type: Number,
         unique: true
-    } ,
+    },
     areaName:  String ,
-    pincode:  Number ,
+    pincode: {
+        type: Number,
+        required: true
+    },
     meetingStatus: { 
         type: String, 
         enum: ['1st Meeting', 'Whatsapp Contacted', 'Call Scheduled', 'Product Enquired', 'Product Delivered'], 
