@@ -11,11 +11,23 @@ dotenv.config(); // Load environment variables from .env file
 const app = express();
 
 // CORS configuration
+const allowedOrigins = [
+  'https://mnlife.vercel.app',
+  'https://mr.mnlifescience.com'
+];
+
 app.use(cors({
-    origin: 'https://mnlife.vercel.app', // Allow only your frontend's origin
-    methods: ['GET', 'POST', 'PATCH', 'DELETE'], // Allow specific HTTP methods
-    credentials: true // Enable credentials (if needed, such as for cookies)
-  }));
+  origin: (origin, callback) => {
+    if (allowedOrigins.includes(origin) || !origin) { // Allow requests with no origin (like Postman)
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+  credentials: true
+}));
+
 
 // Middleware to parse JSON
 app.use(express.json());
