@@ -55,7 +55,43 @@ export const createMR = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
-  
+
+// Edit MR
+export const editMR = async (req, res) => {
+    try {
+        const { id, name, email, area, code, password } = req.body;
+
+        // Find MR by ID and update fields
+        const updatedMR = await MR.findByIdAndUpdate(id, { name, email, area, code, password }, { new: true });
+
+        if (!updatedMR) {
+            return res.status(404).send('MR not found');
+        }
+
+        res.status(200).json(updatedMR);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Delete MR
+export const deleteMR = async (req, res) => {
+    try {
+        const { id } = req.body;
+
+        // Find MR by ID and remove
+        const deletedMR = await MR.findByIdAndDelete(id);
+
+        if (!deletedMR) {
+            return res.status(404).send('MR not found');
+        }
+
+        res.status(200).send('MR deleted successfully');
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
 /// Admin creation route (only used once)
 export const createAdmin = async (req, res) => {
     try {

@@ -12,7 +12,7 @@ const app = express();
 
 // CORS configuration
 app.use(cors({
-    origin: 'http://mr.mnlifescience.com', // Allow only your frontend's origin
+    origin: 'https://mnlife.vercel.app', // Allow only your frontend's origin
     methods: ['GET', 'POST', 'PATCH', 'DELETE'], // Allow specific HTTP methods
     credentials: true // Enable credentials (if needed, such as for cookies)
   }));
