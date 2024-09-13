@@ -3,40 +3,44 @@ import mongoose from 'mongoose';
 const clinicSchema = new mongoose.Schema({
     doctorName: {
         type: String,
-        required: true
+        required: true,
     },
-    doctorNumber:  {
+    doctorNumber: {
         type: Number,
         unique: true,
-        required: true
-    } ,
-    speciality:  {
+        required: true,
+    },
+    doctorWhatsAppContacted: {
+        type: Boolean,
+        default: false,
+    },
+    pharmacyName: String,
+    pharmacyNumber: {
+        type: Number,
+        unique: true,
+    },
+    pharmacyWhatsAppContacted: {
+        type: Boolean,
+        default: false,
+    },
+    grade: String,
+    location: {
+        type: {
+            type: String, 
+            enum: ['Point'], 
+        },
+        coordinates: {
+            type: [Number], 
+        },
+    },
+    remarks: String,
+    notes: {
         type: String,
-        required: true
+        default: '', 
     },
-    pharmacyName:  String ,
-    pharmacyNumber:  {
-        type: Number,
-        unique: true
-    },
-    areaName:  String ,
-    pincode: {
-        type: Number,
-        required: true
-    },
-    meetingStatus: { 
-        type: String, 
-        enum: ['1st Meeting', 'Whatsapp Contacted', 'Call Scheduled', 'Product Enquired', 'Product Delivered'], 
-        default: '1st Meeting' 
-    },
-    leadPriority: { 
-        type: String, 
-        enum: ['Hot', 'Warm', 'Cold'], 
-        default: 'Cold' 
-    },
-    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'MR', required: true }
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'MR', required: true },
 },
-{ timestamps: true } 
+{ timestamps: true }
 );
 
 export default mongoose.model('Clinic', clinicSchema);

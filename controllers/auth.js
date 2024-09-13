@@ -6,12 +6,20 @@ import MR from '../models/MR.js';
 export const adminSignin = async (req, res) => {
     try {
         const { email, password } = req.body;
-        const admin = await MR.findOne({ email, role: 'admin' });
 
-        if (!admin || !(await bcrypt.compare(password, admin.password))) {
+        // Check if admin exists
+        const admin = await MR.findOne({ email, role: 'admin' });
+        if (!admin) {
             return res.status(400).send('Invalid credentials');
         }
 
+        // Compare the entered password with the stored hashed password
+        const isMatch = await bcrypt.compare(password, admin.password);
+        if (!isMatch) {
+            return res.status(400).send('Invalid credentials');
+        }
+
+        // Generate JWT token
         const token = jwt.sign({ id: admin._id, role: 'admin' }, process.env.JWT_SECRET);
         res.send({ token });
     } catch (err) {
@@ -19,11 +27,12 @@ export const adminSignin = async (req, res) => {
     }
 };
 
+
 // MR (User) Signin
 export const mrSignin = async (req, res) => {
     try {
-        const { email, password } = req.body;
-        const mr = await MR.findOne({ email, role: 'mr' }).populate("clinics");
+        const { mobileNumber, password } = req.body;
+        const mr = await MR.findOne({ mobileNumber, role: 'mr' }).populate("clinics");
 
         if (!mr || !(await bcrypt.compare(password, mr.password))) {
             return res.status(400).send('Invalid credentials');
@@ -36,21 +45,25 @@ export const mrSignin = async (req, res) => {
     }
 };
 
-// Admin creates MR
 export const createMR = async (req, res) => {
     try {
-        const { name, email, password, area, code } = req.body;
+        const { name, mobileNumber, password, confirmPassword, areaName, joiningDate } = req.body;
 
-        const existingMR = await MR.findOne({ email });
+        // Check if passwords match
+        if (password !== confirmPassword) {
+            return res.status(400).json({ message: "Passwords do not match" });
+        }
+
+        const existingMR = await MR.findOne({ mobileNumber });
         if (existingMR) {
-            return res.status(400).send('An MR with this email already exists');
+            return res.status(400).send('An MR with this mobile number already exists');
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        const newMR = new MR({ name, email, password: hashedPassword, area, code, role: 'mr' });
+        const newMR = new MR({ name, mobileNumber, password: hashedPassword, areaName, joiningDate: new Date(joiningDate), role: 'mr' });
 
         await newMR.save();
-        res.status(201).send('MR created successfully');
+        return res.status(201).json({ message: 'MR created successfully' });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -59,20 +72,40 @@ export const createMR = async (req, res) => {
 // Edit MR
 export const editMR = async (req, res) => {
     try {
-        const { id, name, email, area, code, password } = req.body;
+        const { id, name, mobileNumber, newPassword, areaName, joiningDate } = req.body;
 
-        // Find MR by ID and update fields
-        const updatedMR = await MR.findByIdAndUpdate(id, { name, email, area, code, password }, { new: true });
-
-        if (!updatedMR) {
-            return res.status(404).send('MR not found');
+        // Validate input
+        if (!id) {
+            return res.status(400).json({ message: "MR ID is required" });
         }
 
-        res.status(200).json(updatedMR);
+        // Find MR by ID
+        const mr = await MR.findById(id);
+        if (!mr) {
+            return res.status(404).json({ message: 'MR not found' });
+        }
+
+        // If a new password is provided, hash it and update
+        if (newPassword) {
+            const hashedPassword = await bcrypt.hash(newPassword, 10);
+            mr.password = hashedPassword;
+        }
+
+        // Update MR details
+        mr.name = name || mr.name;
+        mr.mobileNumber = mobileNumber || mr.mobileNumber;
+        mr.areaName = areaName || mr.areaName;
+        mr.joiningDate = joiningDate ? new Date(joiningDate) : mr.joiningDate;
+
+        // Save updated MR
+        await mr.save();
+
+        res.status(200).json({ message: 'MR updated successfully', mr });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 };
+
 
 // Delete MR
 export const deleteMR = async (req, res) => {
@@ -92,23 +125,56 @@ export const deleteMR = async (req, res) => {
     }
 };
 
-/// Admin creation route (only used once)
+// Create Admin (used only once)
 export const createAdmin = async (req, res) => {
     try {
         const { email, password } = req.body;
 
+        // Check if an admin already exists
         const existingAdmin = await MR.findOne({ role: 'admin' });
         if (existingAdmin) {
             return res.status(400).json({ error: 'Admin account already exists' });
         }
 
+        // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Create a new admin
         const admin = new MR({ email, password: hashedPassword, role: 'admin' });
 
+        // Save the admin
         await admin.save();
         res.status(201).json('Admin created successfully');
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 };
-  
+
+// Edit Admin Email and Password
+export const editAdmin = async (req, res) => {
+    try {
+        const { id: adminId } = req.params; // Get admin ID from request params
+        const { newEmail, newPassword } = req.body;
+
+        // Find the admin by ID
+        const admin = await MR.findOne({ _id: adminId, role: 'admin' });
+        if (!admin) {
+            return res.status(404).json({ message: 'Admin not found' });
+        }
+
+        // Hash the new password if provided
+        if (newPassword) {
+            admin.password = await bcrypt.hash(newPassword, 10);
+        }
+
+        // Update the admin's email if provided
+        admin.email = newEmail || admin.email;
+
+        // Save the updated admin
+        await admin.save();
+        res.status(200).json({ message: 'Admin email and password updated successfully' });
+    } catch (err) {
+        console.error('Error updating admin email and password:', err);
+        res.status(500).json({ error: err.message });
+    }
+};

@@ -1,18 +1,54 @@
 import mongoose from 'mongoose';
 
 const mrSchema = new mongoose.Schema({
-    name: String,
-    email: { 
-        type: String, 
+    name: { type: String },
+    
+    // For MR: mobileNumber is required and unique
+    mobileNumber: {
+        type: Number,
         unique: true,
-        required: true 
+        sparse: true, 
+        validate: {
+            validator: function (v) {
+                return this.role === 'mr' ? !!v : true;
+            },
+            message: 'Mobile number is required for MR'
+        }
     },
-    password: String,
-   
-    area: String,
-    code: String,
+    
+    // For Admin: email is required and unique
+    email: {
+        type: String,
+        unique: true,
+        sparse: true,
+        validate: {
+            validator: function (v) {
+                return this.role === 'admin' ? !!v : true;
+            },
+            message: 'Email is required for Admin'
+        }
+    },
+    
+    password: {
+        type: String,
+        required: true
+    },
+    
+    areaName: { type: String },
+    
+    joiningDate: {
+        type: Date,
+        default: Date.now
+    },
+    
     clinics: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Clinic' }],
-    role: { type: String, enum: ['admin', 'mr'], default: 'mr' }, // role field to distinguish between admin and MR
-});
+    
+    role: { 
+        type: String, 
+        enum: ['admin', 'mr'], 
+        default: 'mr' 
+    }, // Distinguishes between admin and MR
+},
+{ timestamps: true });
 
 export default mongoose.model('MR', mrSchema);

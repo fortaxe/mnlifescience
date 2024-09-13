@@ -5,6 +5,7 @@ import cors from 'cors';
 import authRoutes from "./routes/auth.js";
 import adminRoutes from "./routes/admin.js";
 import hospitalRoutes from "./routes/hospital.js";
+import scheduleCall from "./routes/scheduleCall.js";
 
 dotenv.config(); // Load environment variables from .env file
 
@@ -29,7 +30,6 @@ app.use(cors({
   credentials: true
 }));
 
-
 // Middleware to parse JSON
 app.use(express.json());
 
@@ -37,6 +37,7 @@ app.use(express.json());
 app.use("/api", authRoutes);
 app.use("/api", adminRoutes);
 app.use("/api", hospitalRoutes);
+app.use("/api", scheduleCall);
 
 app.get("/", (req, res) => {
     res.json({ message: "Hello World from backend"})

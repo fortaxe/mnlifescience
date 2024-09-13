@@ -3,12 +3,7 @@ import MR from "../models/MR.js";
 
 // Create Clinic/Lead Form
 export const createHospital = async (req, res) => {
-    const { doctorName, doctorNumber, speciality, pharmacyName, pharmacyNumber, areaName, pincode } = req.body;
-
-    // Validation checks for pincode and phone numbers
-    if (pincode < 100000 || pincode > 999999) {
-        return res.status(400).json({ message: 'Pincode must be a 6-digit number' });
-    }
+    const { doctorName, doctorNumber, pharmacyName, pharmacyNumber, grade, location, remarks } = req.body;
 
     if (doctorNumber < 1000000000 || doctorNumber > 9999999999) {
         return res.status(400).json({ message: 'Doctor number must be a 10-digit number' });
@@ -34,11 +29,11 @@ export const createHospital = async (req, res) => {
         const clinic = new Clinic({
             doctorName,
             doctorNumber,
-            speciality,
             pharmacyName,
             pharmacyNumber,
-            areaName,
-            pincode,
+            grade,
+            location,
+            remarks,
             createdBy: req.user.id
         });
 
@@ -58,7 +53,7 @@ export const getAllClinics = async (req, res) => {
         // Fetch the MR document including the clinics array
         const mr = await MR.findById(req.user.id).populate({
             path: 'clinics',
-            select: '-meetingStatus -leadPriority' // Exclude these fields
+            select: '-doctorWhatsAppContacted -pharmacyWhatsAppContacted' // Exclude these fields
         });
 
         if (!mr) {
@@ -78,7 +73,7 @@ export const getHospital = async (req, res) => {
         // Find the clinic by its ID
         const { id } = req.params;
 
-        const clinic = await Clinic.findById(id).select('-meetingStatus -leadPriority');
+        const clinic = await Clinic.findById(id).select('-doctorWhatsAppContacted -pharmacyWhatsAppContacted');
     
         if (!clinic) {
             return res.status(401).json({ msg: "Doctor not found!"})
@@ -93,13 +88,8 @@ export const getHospital = async (req, res) => {
 
 //Edit Clinic
 export const editHospital = async (req, res) => {
-    const { doctorName, doctorNumber, speciality, pharmacyName, pharmacyNumber, areaName, pincode } = req.body;
+    const  { doctorName, doctorNumber, pharmacyName, pharmacyNumber, grade, location, remarks }  = req.body;
     const { id } = req.params;
-
-    // Validation checks for pincode and phone numbers
-    if (pincode && (pincode < 100000 || pincode > 999999)) {
-        return res.status(400).json({ message: 'Pincode must be a 6-digit number' });
-    }
 
     if (doctorNumber && (doctorNumber < 1000000000 || doctorNumber > 9999999999)) {
         return res.status(400).json({ message: 'Doctor number must be a 10-digit number' });
@@ -140,11 +130,11 @@ export const editHospital = async (req, res) => {
         await Clinic.findByIdAndUpdate(id, {
             doctorName,
             doctorNumber: numDoctorNumber,
-            speciality,
             pharmacyName,
             pharmacyNumber: numPharmacyNumber,
-            areaName,
-            pincode
+            grade,
+            location,
+            remarks
         }, { new: true }); // Returns the updated document
 
         res.status(200).json({ message: 'Clinic updated successfully' });
