@@ -12,7 +12,7 @@ export const createDoctorScheduleCall = async (req, res) => {
             return res.status(404).json({ message: 'Doctor clinic not found or no doctor number' });
         }
 
-        const existingSchedule = await ScheduleCall.findOne({ date, time, type: 'doctor' });
+        const existingSchedule = await ScheduleCall.findOne({ date, time });
         if (existingSchedule) {
             return res.status(400).json({ message: 'A schedule call already exists for this date and time' });
         }
@@ -45,7 +45,7 @@ export const createPharmacyScheduleCall = async (req, res) => {
             return res.status(404).json({ message: 'Pharmacy clinic not found or no pharmacy number' });
         }
 
-        const existingSchedule = await ScheduleCall.findOne({ date, time, type: 'pharmacy' });
+        const existingSchedule = await ScheduleCall.findOne({ date, time });
         if (existingSchedule) {
             return res.status(400).json({ message: 'A schedule call already exists for this date and time' });
         }
@@ -78,7 +78,7 @@ export const createBothScheduleCall = async (req, res) => {
             return res.status(404).json({ message: 'Clinic not found or missing doctor/pharmacy number' });
         }
 
-        const existingSchedule = await ScheduleCall.findOne({ date, time, type: 'both' });
+        const existingSchedule = await ScheduleCall.findOne({ date, time });
         if (existingSchedule) {
             return res.status(400).json({ message: 'A schedule call already exists for this date and time' });
         }
