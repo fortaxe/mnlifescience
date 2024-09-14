@@ -1,5 +1,6 @@
 import MR from '../models/MR.js';
 import Clinic from '../models/Clinic.js';
+import ScheduleCall from "../models/ScheduleCall.js";
 
 // Get all MRs (for Admin Dashboard)
 export const getAllMRs = async (req, res) => {
@@ -51,3 +52,63 @@ export const adminEditClinic = async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 };
+
+export const getNotes = async (req, res) => {
+    const { id } = req.body;
+
+    try {
+        // Find the schedule by its ID and populate the clinic details
+        const schedule = await ScheduleCall.findById(id).populate('clinic'); // Assuming 'clinic' is the reference field
+
+        // Check if the schedule exists
+        if (!schedule) {
+            return res.status(404).json({ message: "Schedule not found!" });
+        }
+
+        // Check if the clinic exists in the schedule
+        if (!schedule.clinic) {
+            return res.status(404).json({ message: "Clinic not found for this schedule!" });
+        }
+
+        // Retrieve the notes from the clinic
+        const clinicNotes = schedule.clinic.notes;
+
+        // Send the response back with the clinic notes
+        return res.status(200).json({ message: 'Clinic notes retrieved successfully', notes: clinicNotes });
+
+    } catch (error) {
+        console.error("Error retrieving clinic notes:", error);
+        return res.status(500).json({ message: "Server error" });
+    }
+};
+
+
+//Edit the notes
+export const editNotes = async (req, res) => {
+    const { id, notes } = req.body;
+
+    try {
+        const schedule = await ScheduleCall.findById(id).populate("clinic");
+
+        if (!schedule) {
+            return res.status(404).json({ message: "schedule not found " })
+        }
+
+        // Check if the clinic exists in the schedule
+        if (!schedule.clinic) {
+            return res.status(404).json({ message: "Clinic not found for this schedule!" });
+        }
+
+        // Update the clinic notes
+        schedule.clinic.notes = notes || schedule.clinic.notes;
+
+        await schedule.clinic.save();
+
+        return res.status(200).json({ message: "Clinic notes updated successfully", notes: schedule.clinic.notes });
+    } catch (error) {
+        console.error("Error updating clinic notes:", error);
+        return res.status(500).json({ message: "Server error" });
+    }
+
+
+}

@@ -47,7 +47,7 @@ export const createHospital = async (req, res) => {
     }
 };
 
-// Get all clinics
+// Get all clinics in user panel
 export const getAllClinics = async (req, res) => {
     try {
         // Fetch the MR document including the clinics array
@@ -67,7 +67,7 @@ export const getAllClinics = async (req, res) => {
     }
 };
 
-//Get Clinic
+//Get Clinic in user panel
 export const getHospital = async (req, res) => {
     try {
         // Find the clinic by its ID
@@ -86,7 +86,7 @@ export const getHospital = async (req, res) => {
     }
 }
 
-//Edit Clinic
+//Edit Clinic in user panel
 export const editHospital = async (req, res) => {
     const  { doctorName, doctorNumber, pharmacyName, pharmacyNumber, grade, location, remarks }  = req.body;
     const { id } = req.params;
