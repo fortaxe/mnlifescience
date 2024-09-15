@@ -72,8 +72,8 @@ export const createMR = async (req, res) => {
             areaName,
             joiningDate: new Date(joiningDate),
             role: 'mr',
-            // aadhaarCard,
-            // panCard
+            aadhaarCard,
+            panCard
         });
 
         await newMR.save();
