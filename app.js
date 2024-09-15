@@ -101,7 +101,7 @@ app.use(cors({
   credentials: true
 }));
 
-// Middleware to parse JSON
+// Middleware to parse JSO
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
