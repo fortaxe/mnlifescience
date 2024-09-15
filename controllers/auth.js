@@ -61,9 +61,9 @@ export const createMR = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // // Access the uploaded files URLs
-        // const aadhaarCard = req.files['aadhaarCard'] ? req.files['aadhaarCard'][0].path : null;
-        // const panCard = req.files['panCard'] ? req.files['panCard'][0].path : null;
+        // Access the uploaded files URLs
+        const aadhaarCard = req.files['aadhaarCard'] ? req.files['aadhaarCard'][0].path : null;
+        const panCard = req.files['panCard'] ? req.files['panCard'][0].path : null;
 
         const newMR = new MR({
             name,
