@@ -48,6 +48,12 @@ const mrSchema = new mongoose.Schema({
         enum: ['admin', 'mr'], 
         default: 'mr' 
     }, // Distinguishes between admin and MR
+    aadhaarCard: { 
+        type: String 
+    },
+    panCard: { 
+        type: String 
+    } 
 },
 { timestamps: true });
 

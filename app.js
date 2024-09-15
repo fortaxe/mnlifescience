@@ -6,6 +6,7 @@ import authRoutes from "./routes/auth.js";
 import adminRoutes from "./routes/admin.js";
 import hospitalRoutes from "./routes/hospital.js";
 import scheduleCall from "./routes/scheduleCall.js";
+import { uploadDocuments } from "./middleware/uploadDocuments.js";
 
 dotenv.config(); // Load environment variables from .env file
 
@@ -15,12 +16,23 @@ const app = express();
 const allowedOrigins = [
   'https://mnlife.vercel.app',
   'https://mr.mnlifescience.com',
-  'https://mnlife-ten.vercel.app'
+  'https://mnlife-ten.vercel.app',
+  'http://localhost:5000'
 ];
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (allowedOrigins.includes(origin) || !origin) { // Allow requests with no origin (like Postman)
+    // Allow requests with no origin (like Postman)
+    if (!origin) {
+      return callback(null, true);
+    }
+
+    // Block or allow Chrome extension requests
+    if (origin.startsWith("chrome-extension://")) {
+      return callback(null, false); // Block Chrome extension requests explicitly
+    }
+
+    if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
@@ -30,8 +42,23 @@ app.use(cors({
   credentials: true
 }));
 
+// app.use(cors({
+//   origin: (origin, callback) => {
+//     console.log("Request origin:", origin);
+//     if (allowedOrigins.includes(origin) || !origin) { // Allow requests with no origin (like Postman)
+//       callback(null, true);
+//     } else {
+//       console.log("Blocked by CORS:", origin);
+//       callback(new Error('Not allowed by CORS'));
+//     }
+//   },
+//   methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+//   credentials: true
+// }));
+
 // Middleware to parse JSON
-app.use(express.json());
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
 // Routes
 app.use("/api", authRoutes);

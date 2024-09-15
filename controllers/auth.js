@@ -60,7 +60,21 @@ export const createMR = async (req, res) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        const newMR = new MR({ name, mobileNumber, password: hashedPassword, areaName, joiningDate: new Date(joiningDate), role: 'mr' });
+
+        // // Access the uploaded files URLs
+        // const aadhaarCard = req.files['aadhaarCard'] ? req.files['aadhaarCard'][0].path : null;
+        // const panCard = req.files['panCard'] ? req.files['panCard'][0].path : null;
+
+        const newMR = new MR({
+            name,
+            mobileNumber,
+            password: hashedPassword,
+            areaName,
+            joiningDate: new Date(joiningDate),
+            role: 'mr',
+            // aadhaarCard,
+            // panCard
+        });
 
         await newMR.save();
         return res.status(201).json({ message: 'MR created successfully' });

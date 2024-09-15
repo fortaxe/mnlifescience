@@ -1,6 +1,7 @@
 import express from 'express';
 import { adminSignin, mrSignin, createMR, createAdmin, editMR, deleteMR, editAdmin } from '../controllers/auth.js';
 import authMiddleware from '../middleware/auth.js';
+import { uploadDocuments } from "../middleware/uploadDocuments.js";
 
 const router = express.Router();
 
