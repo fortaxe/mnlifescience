@@ -55,7 +55,9 @@ export const createMR = async (req, res) => {
         }
 
         const existingMR = await MR.findOne({ mobileNumber });
+        console.log('Searching for MR with mobileNumber:', mobileNumber);
         if (existingMR) {
+            console.log('Existing MR found:', existingMR);
             return res.status(400).send('An MR with this mobile number already exists');
         }
 
