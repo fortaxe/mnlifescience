@@ -9,7 +9,7 @@ router.post('/admin/signin', adminSignin);
 router.post('/user/signin', mrSignin);
 router.post('/admin/create-mr', authMiddleware('admin'), createMR);
 router.post('/admin/create', createAdmin);
-router.patch('/admin/edit-mr', authMiddleware('admin'), editMR);
+router.patch('/admin/edit-mr', authMiddleware('admin'),uploadDocuments, editMR);
 router.delete('/admin/delete-mr', authMiddleware('admin'), deleteMR);
 router.patch("/admin/edit/:id", authMiddleware("admin"), editAdmin);
 
