@@ -32,8 +32,11 @@ export const adminSignin = async (req, res) => {
 export const mrSignin = async (req, res) => {
     try {
         const { mobileNumber, password } = req.body;
-        const mr = await MR.findOne({ mobileNumber, role: 'mr' }).populate("clinics");
 
+        const mobileNumberStr = String(mobileNumber);
+        const mr = await MR.findOne({ mobileNumber: mobileNumberStr, role: 'mr' }).populate("clinics");
+
+        console.log(mr)
         if (!mr || !(await bcrypt.compare(password, mr.password))) {
             return res.status(400).send('Invalid credentials');
         }
@@ -54,7 +57,9 @@ export const createMR = async (req, res) => {
             return res.status(400).json({ message: "Passwords do not match" });
         }
 
-        const existingMR = await MR.findOne({ mobileNumber });
+        const mobileNumberStr = String(mobileNumber);
+
+        const existingMR = await MR.findOne({ mobileNumber: mobileNumberStr });
         console.log('Searching for MR with mobileNumber:', mobileNumber);
         if (existingMR) {
             console.log('Existing MR found:', existingMR);
@@ -69,7 +74,7 @@ export const createMR = async (req, res) => {
 
         const newMR = new MR({
             name,
-            mobileNumber,
+            mobileNumber: mobileNumberStr,
             password: hashedPassword,
             areaName,
             joiningDate: new Date(joiningDate),
@@ -81,6 +86,7 @@ export const createMR = async (req, res) => {
         await newMR.save();
         return res.status(201).json({ message: 'MR created successfully' });
     } catch (err) {
+        console.log(err);
         res.status(500).json({ error: err.message });
     }
 };
@@ -109,9 +115,16 @@ export const editMR = async (req, res) => {
 
         // Update MR details
         mr.name = name || mr.name;
-        mr.mobileNumber = mobileNumber || mr.mobileNumber;
+        mr.mobileNumber = mobileNumber ? String(mobileNumber) : mr.mobileNumber;
         mr.areaName = areaName || mr.areaName;
         mr.joiningDate = joiningDate ? new Date(joiningDate) : mr.joiningDate;
+
+        // Update Aadhaar and PAN card if new files are uploaded
+        const aadhaarCard = req.files['aadhaarCard'] ? req.files['aadhaarCard'][0].path : mr.aadhaarCard;
+        const panCard = req.files['panCard'] ? req.files['panCard'][0].path : mr.panCard;
+
+        mr.aadhaarCard = aadhaarCard;
+        mr.panCard = panCard;
 
         // Save updated MR
         await mr.save();

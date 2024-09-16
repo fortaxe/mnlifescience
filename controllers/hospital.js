@@ -5,14 +5,6 @@ import MR from "../models/MR.js";
 export const createHospital = async (req, res) => {
     const { doctorName, doctorNumber, pharmacyName, pharmacyNumber, grade, location, remarks } = req.body;
 
-    if (doctorNumber < 1000000000 || doctorNumber > 9999999999) {
-        return res.status(400).json({ message: 'Doctor number must be a 10-digit number' });
-    }
-
-    if (pharmacyNumber && (pharmacyNumber < 1000000000 || pharmacyNumber > 9999999999)) {
-        return res.status(400).json({ message: 'Pharmacy number must be a 10-digit number' });
-    }
-
     try {
         const existingDoctor = await Clinic.findOne({ doctorNumber });
         if (existingDoctor) {
@@ -91,14 +83,6 @@ export const editHospital = async (req, res) => {
     const  { doctorName, doctorNumber, pharmacyName, pharmacyNumber, grade, location, remarks }  = req.body;
     const { id } = req.params;
 
-    if (doctorNumber && (doctorNumber < 1000000000 || doctorNumber > 9999999999)) {
-        return res.status(400).json({ message: 'Doctor number must be a 10-digit number' });
-    }
-
-    if (pharmacyNumber && (pharmacyNumber < 1000000000 || pharmacyNumber > 9999999999)) {
-        return res.status(400).json({ message: 'Pharmacy number must be a 10-digit number' });
-    }
-
     try {
         const clinic = await Clinic.findById(id);
 
@@ -106,20 +90,16 @@ export const editHospital = async (req, res) => {
             return res.status(404).json({ message: 'Doctor not found' });
         }
         
-        // Convert to numbers for comparison
-        const numDoctorNumber = doctorNumber ? Number(doctorNumber) : null;
-        const numPharmacyNumber = pharmacyNumber ? Number(pharmacyNumber) : null;
-
         // Check for duplicate doctorNumber or pharmacyNumber
-        if (numDoctorNumber && numDoctorNumber !== clinic.doctorNumber) {
-            const existingDoctor = await Clinic.findOne({ doctorNumber: numDoctorNumber });
+        if (doctorNumber && doctorNumber !== clinic.doctorNumber) {
+            const existingDoctor = await Clinic.findOne({ doctorNumber });
             if (existingDoctor) {
                 return res.status(400).json({ message: 'Another doctor with this doctor number already exists' });
             }
         }
 
-        if (numPharmacyNumber && numPharmacyNumber !== clinic.pharmacyNumber) {
-            const existingPharmacy = await Clinic.findOne({ pharmacyNumber: numPharmacyNumber });
+        if (pharmacyNumber && pharmacyNumber !== clinic.pharmacyNumber) {
+            const existingPharmacy = await Clinic.findOne({ pharmacyNumber });
             if (existingPharmacy) {
                 return res.status(400).json({ message: 'Another pharmacy with this number already exists' });
             }

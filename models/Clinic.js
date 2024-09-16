@@ -6,7 +6,7 @@ const clinicSchema = new mongoose.Schema({
         required: true,
     },
     doctorNumber: {
-        type: Number,
+        type: String,
         unique: true,
         required: true,
     },
@@ -16,7 +16,7 @@ const clinicSchema = new mongoose.Schema({
     },
     pharmacyName: String,
     pharmacyNumber: {
-        type: Number,
+        type: String,
         unique: true,
     },
     pharmacyWhatsAppContacted: {

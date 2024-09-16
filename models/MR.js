@@ -5,7 +5,7 @@ const mrSchema = new mongoose.Schema({
     
     // For MR: mobileNumber is required and unique
     mobileNumber: {
-        type: Number,
+        type: String,
         unique: true,
         sparse: true, 
         validate: {
