@@ -138,11 +138,11 @@ export const rescheduleScheduleCall = async (req, res) => {
     }
 };
 
-
 // Update Schedule Call Status
 export const updateScheduleCall = async (req, res) => {
     const { scheduleCallId, updateStatus } = req.body;
 
+    console.log(scheduleCallId, updateStatus)
     try {
         // Find the schedule call by its ID
         const scheduleCall = await ScheduleCall.findById(scheduleCallId);
@@ -162,7 +162,6 @@ export const updateScheduleCall = async (req, res) => {
     }
 };
 
-
 // Get Today's Schedule Calls
 export const getTodaysScheduleCalls = async (req, res) => {
     try {
@@ -177,9 +176,11 @@ export const getTodaysScheduleCalls = async (req, res) => {
         }).populate('clinic');
 
         const result = scheduleCalls.map(call => ({
+            scheduleCallId: call._id,
             date: call.date,
             time: call.time,
             type: call.type,
+            status: call.updateStatus,
             ...(call.type === 'doctor' || call.type === 'both' ? {
                 doctorNumber: call.clinic.doctorNumber,
                 dcotorName: call.clinic.doctorName
@@ -212,9 +213,11 @@ export const getUpcomingScheduleCalls = async (req, res) => {
         console.log('Raw Schedule Calls Data:', scheduleCalls);
 
         const result = scheduleCalls.map(call => ({
+            scheduleCallId: call._id,
             date: call.date,
             time: call.time,
             type: call.type,
+            status: call.updateStatus,
             ...(call.type === 'doctor' || call.type === 'both' ? {
                 doctorNumber: call.clinic?.doctorNumber, // Use optional chaining to handle null values
                 doctorName: call.clinic?.doctorName 
