@@ -37,18 +37,10 @@ export const adminEditClinic = async (req, res) => {
         const doctorNumberParsed = doctorNumber ? Number(doctorNumber) : null;
         const pharmacyNumberParsed = pharmacyNumber ? Number(pharmacyNumber) : null;
 
-        // // Validate doctorNumber and pharmacyNumber
-        // if (doctorNumberParsed && (doctorNumberParsed < 1000000000 || doctorNumberParsed > 9999999999)) {
-        //     return res.status(400).json({ message: 'Doctor number must be a 10-digit number' });
-        // }
-
-        // if (pharmacyNumberParsed && (pharmacyNumberParsed < 1000000000 || pharmacyNumberParsed > 9999999999)) {
-        //     return res.status(400).json({ message: 'Pharmacy number must be a 10-digit number' });
-        // }
         
         // Check if doctorNumber already exists in another clinic
         if (doctorNumberParsed !== null && doctorNumberParsed !== clinic.doctorNumber) {
-            const existingDoctor = await Clinic.findOne({ doctorNumber: doctorNumberParsed });
+            const existingDoctor = await Clinic.findOne({ doctorNumber: doctorNumberParsed, _id: { $ne: id } });
             if (existingDoctor) {
                 return res.status(400).json({ message: 'Doctor number already exists' });
             }
@@ -56,7 +48,7 @@ export const adminEditClinic = async (req, res) => {
 
         // Check if pharmacyNumber already exists in another clinic
         if (pharmacyNumberParsed !== null && pharmacyNumberParsed !== clinic.pharmacyNumber) {
-            const existingPharmacy = await Clinic.findOne({ pharmacyNumber: pharmacyNumberParsed });
+            const existingPharmacy = await Clinic.findOne({ pharmacyNumber: pharmacyNumberParsed, _id: { $ne: id } });
             if (existingPharmacy) {
                 return res.status(400).json({ message: 'Pharmacy number already exists' });
             }
