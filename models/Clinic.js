@@ -42,6 +42,9 @@ const clinicSchema = new mongoose.Schema({
         type: String,
         default: '', 
     },
+    areaName: {
+        type: String
+    },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'MR', required: true },
 },
 { timestamps: true }
