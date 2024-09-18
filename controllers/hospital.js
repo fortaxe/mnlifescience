@@ -3,7 +3,7 @@ import MR from "../models/MR.js";
 
 // Create Clinic/Lead Form
 export const createHospital = async (req, res) => {
-    const { doctorName, doctorNumber, pharmacyName, pharmacyNumber, grade, location, remarks } = req.body;
+    const { doctorName, doctorNumber,speciality, pharmacyName, pharmacyNumber, grade, location, remarks } = req.body;
 
     try {
         const existingDoctor = await Clinic.findOne({ doctorNumber });
@@ -21,6 +21,7 @@ export const createHospital = async (req, res) => {
         const clinic = new Clinic({
             doctorName,
             doctorNumber,
+            speciality,
             pharmacyName,
             pharmacyNumber,
             grade,
@@ -35,6 +36,7 @@ export const createHospital = async (req, res) => {
          await MR.findByIdAndUpdate(req.user.id, { $push: { clinics: clinic._id } });
         res.status(201).json({ clinic });
     } catch (error) {
+        console.log(error);
         res.status(500).json({ message: 'Server error' });
     }
 };

@@ -11,6 +11,9 @@ const clinicSchema = new mongoose.Schema({
         unique: true,
         required: true,
     },
+    speciality:{
+        type: String,
+    },
     doctorWhatsAppContacted: {
         type: Boolean,
         default: false,
