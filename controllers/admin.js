@@ -37,14 +37,14 @@ export const adminEditClinic = async (req, res) => {
         const doctorNumberParsed = doctorNumber ? Number(doctorNumber) : null;
         const pharmacyNumberParsed = pharmacyNumber ? Number(pharmacyNumber) : null;
 
-        // Validate doctorNumber and pharmacyNumber
-        if (doctorNumberParsed && (doctorNumberParsed < 1000000000 || doctorNumberParsed > 9999999999)) {
-            return res.status(400).json({ message: 'Doctor number must be a 10-digit number' });
-        }
+        // // Validate doctorNumber and pharmacyNumber
+        // if (doctorNumberParsed && (doctorNumberParsed < 1000000000 || doctorNumberParsed > 9999999999)) {
+        //     return res.status(400).json({ message: 'Doctor number must be a 10-digit number' });
+        // }
 
-        if (pharmacyNumberParsed && (pharmacyNumberParsed < 1000000000 || pharmacyNumberParsed > 9999999999)) {
-            return res.status(400).json({ message: 'Pharmacy number must be a 10-digit number' });
-        }
+        // if (pharmacyNumberParsed && (pharmacyNumberParsed < 1000000000 || pharmacyNumberParsed > 9999999999)) {
+        //     return res.status(400).json({ message: 'Pharmacy number must be a 10-digit number' });
+        // }
         
         // Check if doctorNumber already exists in another clinic
         if (doctorNumberParsed !== null && doctorNumberParsed !== clinic.doctorNumber) {
@@ -138,6 +138,22 @@ export const editNotes = async (req, res) => {
         console.error("Error updating clinic notes:", error);
         return res.status(500).json({ message: "Server error" });
     }
-
-
 }
+
+export const adminDeleteClinic = async (req, res) => {
+    try {
+        const { id } = req.body;
+
+        // Find MR by ID and remove
+        const deletedClinic = await Clinic.findByIdAndDelete(id);
+
+        if (!deletedClinic) {
+            return res.status(404).send('Doctor not found');
+        }
+
+        res.status(200).send('Doctor deleted successfully');
+    } catch (err) {
+        console.error('Error deleting doctor:', err);
+        res.status(500).json({ error: err.message });
+    }
+};

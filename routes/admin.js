@@ -1,5 +1,5 @@
 import express from 'express';
-import { getAllMRs, getAllClinics, adminEditClinic, getNotes, editNotes } from '../controllers/admin.js';
+import { getAllMRs, getAllClinics, adminEditClinic, getNotes, editNotes, adminDeleteClinic } from '../controllers/admin.js';
 import authMiddleware from '../middleware/auth.js';
 
 const router = express.Router();
@@ -15,5 +15,7 @@ router.patch('/admin/edit-clinic', authMiddleware('admin'), adminEditClinic);
 router.get('/admin/get-notes', authMiddleware('admin'), getNotes);
 
 router.patch('/admin/edit-notes', authMiddleware('admin'), editNotes);
+
+router.delete('/admin/delete-clinic', authMiddleware('admin'), adminDeleteClinic);
 
 export default router;

@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import ScheduleCall from "./ScheduleCall.js";
 
 const clinicSchema = new mongoose.Schema({
     doctorName: {
@@ -42,5 +43,16 @@ const clinicSchema = new mongoose.Schema({
 },
 { timestamps: true }
 );
+
+// Middleware to delete related ScheduleCall when a clinic is deleted
+clinicSchema.pre("findOneAndDelete", async function (next) {
+    try {
+        const clinicId = this.getQuery()._id;
+        await ScheduleCall.deleteMany({ clinic: clinicId });  // Remove all schedules related to the clinic
+        next();
+    } catch (error) {
+        next(error);
+    }
+});
 
 export default mongoose.model('Clinic', clinicSchema);

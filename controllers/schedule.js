@@ -189,7 +189,13 @@ export const getTodaysScheduleCalls = async (req, res) => {
                 pharmacyNumber: call.clinic.pharmacyNumber,
                 pharmacyName: call.clinic.pharmacyName
             } : {})
-        }));
+        }))
+        .sort((a, b) => {
+            // Compare times first
+            if (a.time !== b.time) {
+                return a.time.localeCompare(b.time);
+            }          
+        });
         console.log(result)
 
         res.status(200).json({ scheduleCalls: result });
@@ -220,14 +226,21 @@ export const getUpcomingScheduleCalls = async (req, res) => {
             status: call.updateStatus,
             ...(call.type === 'doctor' || call.type === 'both' ? {
                 doctorNumber: call.clinic?.doctorNumber, // Use optional chaining to handle null values
-                doctorName: call.clinic?.doctorName 
+                doctorName: call.clinic?.doctorName
             } : {}),
             ...(call.type === 'pharmacy' || call.type === 'both' ? {
                 pharmacyNumber: call.clinic?.pharmacyNumber,
                 pharmacyName: call.clinic?.pharmacyName
             } : {})
-        }));
-
+        }))
+        .sort((a, b) => {
+            // Compare times first
+            if (a.time !== b.time) {
+                return a.time.localeCompare(b.time);
+            }
+            // If times are the same, compare dates
+            return new Date(a.date) - new Date(b.date);
+        });
         console.log(result)
 
         res.status(200).json({ scheduleCalls: result });
@@ -242,32 +255,9 @@ export const getCompletedScheduleCalls = async (req, res) => {
     try {
         // Retrieve all schedule calls with status 'Call Done'
         const completedCalls = await ScheduleCall.find({ updateStatus: 'Call Done' })
-            .populate('clinic', 'doctorName doctorNumber pharmacyName pharmacyNumber'); // Populate clinic details
+            .populate('clinic', 'doctorName doctorNumber pharmacyName pharmacyNumber');
 
-        // Map through the completed calls and structure the response based on the type
-        const result = completedCalls.map(call => {
-            let response = {
-                lastCallDate: call.date,
-                type: call.type // Include the type (doctor, pharmacy, or both)
-            };
-            
-
-            // Conditionally add fields based on the type
-            if (call.type === 'doctor' || call.type === 'both') {
-                response.doctorName = call.clinic.doctorName;
-                response.doctorNumber = call.clinic.doctorNumber;
-            }
-
-            if (call.type === 'pharmacy' || call.type === 'both') {
-                response.pharmacyName = call.clinic.pharmacyName;
-                response.pharmacyNumber = call.clinic.pharmacyNumber;
-            }
-
-            return response;
-        });
-        console.log(result)
-        // Return the structured completed calls
-        res.status(200).json({ completedCalls: result });
+        res.status(200).json({ completedCalls });
     } catch (error) {
         console.error('Error retrieving completed schedule calls:', error);
         res.status(500).json({ message: 'Server error' });

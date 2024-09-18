@@ -8,7 +8,7 @@ const scheduleCallSchema = new mongoose.Schema({
     updateStatus: { type: String, enum: ['Scheduled', 'Call Done', 'Cancelled'], default: 'Scheduled' },
     type: { type: String, enum: ['doctor', 'pharmacy', 'both'] },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'MR' },
-}, 
-{ timestamps: true });
+},
+    { timestamps: true });
 
 export default mongoose.model('ScheduleCall', scheduleCallSchema);

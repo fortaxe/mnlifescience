@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import MR from '../models/MR.js';
+import fs from 'fs'; 
 
 // Admin Signin
 export const adminSignin = async (req, res) => {
@@ -69,8 +70,8 @@ export const createMR = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Access the uploaded files URLs
-        const aadhaarCard = req.files['aadhaarCard'] ? req.files['aadhaarCard'][0].path : null;
-        const panCard = req.files['panCard'] ? req.files['panCard'][0].path : null;
+        const aadhaarCard = req.files?.['aadhaarCard']?.[0]?.path || null;  // Use optional chaining
+        const panCard = req.files?.['panCard']?.[0]?.path || null;
 
         const newMR = new MR({
             name,
@@ -92,9 +93,61 @@ export const createMR = async (req, res) => {
 };
 
 // Edit MR
+// export const editMR = async (req, res) => {
+//     try {
+//         const { id, name, mobileNumber, newPassword, confirmPassword, areaName, joiningDate,status } = req.body;
+
+//         // Validate input
+//         if (!id) {
+//             return res.status(400).json({ message: "MR ID is required" });
+//         }
+
+//         // Find MR by ID
+//         const mr = await MR.findById(id);
+//         if (!mr) {
+//             return res.status(404).json({ message: 'MR not found' });
+//         }
+
+//          // Check if passwords match
+//          if (newPassword !== confirmPassword) {
+//             return res.status(400).json({ message: "Passwords do not match" });
+//         }
+
+//         // If a new password is provided, hash it and update
+//         if (newPassword) {
+//             const hashedPassword = await bcrypt.hash(newPassword, 10);
+//             mr.password = hashedPassword;
+//             mr.markModified("password")
+//             console.log("Password updated:", hashedPassword);
+//         }
+
+//         // Update MR details
+//         mr.name = name || mr.name;
+//         mr.mobileNumber = mobileNumber ? String(mobileNumber) : mr.mobileNumber;
+//         mr.areaName = areaName || mr.areaName;
+//         mr.joiningDate = joiningDate ? new Date(joiningDate) : mr.joiningDate;
+
+//         // // Update Aadhaar and PAN card if new files are uploaded
+//         // const aadhaarCard = req.files['aadhaarCard'] ? req.files['aadhaarCard'][0].path : mr.aadhaarCard;
+//         // const panCard = req.files['panCard'] ? req.files['panCard'][0].path : mr.panCard;
+
+//         // mr.aadhaarCard = aadhaarCard;
+//         // mr.panCard = panCard;
+
+//         // Save updated MR
+//         const savedMR = await mr.save();
+//         console.log("Updated MR:", savedMR);
+//         console.log(mr.save())
+//         res.status(200).json({ message: 'MR updated successfully', mr });
+//     } catch (err) {
+//         res.status(500).json({ error: err.message });
+//     }
+// };
+
+
 export const editMR = async (req, res) => {
     try {
-        const { id, name, mobileNumber, newPassword, areaName, joiningDate } = req.body;
+        const { id, name, mobileNumber, newPassword, confirmPassword, areaName, joiningDate, status } = req.body;
 
         // Validate input
         if (!id) {
@@ -107,29 +160,38 @@ export const editMR = async (req, res) => {
             return res.status(404).json({ message: 'MR not found' });
         }
 
+         // Check if new mobile number already exists in DB for another MR
+         if (mobileNumber && String(mobileNumber) !== mr.mobileNumber) {
+            const existingMR = await MR.findOne({ mobileNumber: String(mobileNumber),_id: { $ne: id } });
+            if (existingMR) {
+                return res.status(400).json({ message: 'Mobile number already in use by another MR' });
+            }
+        }
+
+        // Check if passwords match
+        if (newPassword && newPassword !== confirmPassword) {
+            return res.status(400).json({ message: "Passwords do not match" });
+        }
+
         // If a new password is provided, hash it and update
         if (newPassword) {
             const hashedPassword = await bcrypt.hash(newPassword, 10);
-            mr.password = hashedPassword;
+            mr.password = hashedPassword; // Update password
+            mr.markModified("password");  // Ensure password field is treated as modified
         }
 
-        // Update MR details
+        // Update other MR details
         mr.name = name || mr.name;
         mr.mobileNumber = mobileNumber ? String(mobileNumber) : mr.mobileNumber;
         mr.areaName = areaName || mr.areaName;
         mr.joiningDate = joiningDate ? new Date(joiningDate) : mr.joiningDate;
+        mr.status = status || mr.status;
 
-        // Update Aadhaar and PAN card if new files are uploaded
-        const aadhaarCard = req.files['aadhaarCard'] ? req.files['aadhaarCard'][0].path : mr.aadhaarCard;
-        const panCard = req.files['panCard'] ? req.files['panCard'][0].path : mr.panCard;
+        // Save the updated MR
+        const savedMR = await mr.save(); // Await the save operation
+        console.log("Updated MR:", savedMR);
 
-        mr.aadhaarCard = aadhaarCard;
-        mr.panCard = panCard;
-
-        // Save updated MR
-        await mr.save();
-
-        res.status(200).json({ message: 'MR updated successfully', mr });
+        res.status(200).json({ message: 'MR updated successfully', mr: savedMR });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -183,7 +245,12 @@ export const createAdmin = async (req, res) => {
 export const editAdmin = async (req, res) => {
     try {
         const { id: adminId } = req.params; // Get admin ID from request params
-        const { newEmail, newPassword } = req.body;
+        const { newEmail, newPassword, confirmPassword } = req.body;
+
+        // Check if passwords match
+        if (newPassword &&newPassword !== confirmPassword) {
+            return res.status(400).json({ message: "Passwords do not match" });
+        }
 
         // Find the admin by ID
         const admin = await MR.findOne({ _id: adminId, role: 'admin' });

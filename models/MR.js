@@ -49,11 +49,18 @@ const mrSchema = new mongoose.Schema({
         default: 'mr' 
     }, // Distinguishes between admin and MR
     aadhaarCard: { 
-        type: String 
+        type: String,
+        default: null
     },
     panCard: { 
-        type: String 
-    } 
+        type: String,
+        default: null 
+    },
+    status: {
+        type: String,
+        enum: ['Active', 'In-Active'], 
+        default: "Active"
+    }
 },
 { timestamps: true });
 
