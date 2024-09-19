@@ -95,32 +95,31 @@ export const editHospital = async (req, res) => {
 
         // Check for duplicate doctorNumber or pharmacyNumber
         if (doctorNumber && doctorNumber !== clinic.doctorNumber) {
-            const existingDoctor = await Clinic.findOne({ doctorNumber });
+            const existingDoctor = await Clinic.findOne({ doctorNumber, _id: { $ne: id } });
             if (existingDoctor) {
                 return res.status(400).json({ message: 'Another doctor with this doctor number already exists' });
             }
         }
 
         if (pharmacyNumber && pharmacyNumber !== clinic.pharmacyNumber) {
-            const existingPharmacy = await Clinic.findOne({ pharmacyNumber });
+            const existingPharmacy = await Clinic.findOne({ pharmacyNumber, _id: { $ne: id } });
             if (existingPharmacy) {
                 return res.status(400).json({ message: 'Another pharmacy with this number already exists' });
             }
         }
 
-        // Create an object to hold the updates
-        const updates = {};
-        if (doctorName) updates.doctorName = doctorName;
-        if (doctorNumber) updates.doctorNumber = doctorNumber;
-        if (speciality) updates.speciality = speciality;
-        if (pharmacyName) updates.pharmacyName = pharmacyName;
-        if (pharmacyNumber) updates.pharmacyNumber = pharmacyNumber;
-        if (grade) updates.grade = grade;
-        if (remarks) updates.remarks = remarks;
-        if (areaName) updates.areaName = areaName;
+        // Update the fields only if provided in the request body
+        clinic.doctorName = doctorName || clinic.doctorName;
+        clinic.doctorNumber = doctorNumber || clinic.doctorNumber;
+        clinic.pharmacyName = pharmacyName || clinic.pharmacyName;
+        clinic.pharmacyNumber = pharmacyNumber || clinic.pharmacyNumber;
+        clinic.grade = grade || clinic.grade;
+        clinic.speciality = speciality || clinic.speciality;
+        clinic.remarks = remarks || clinic.remarks;
+        clinic.areaName = areaName || clinic.areaName;
 
-        // Using findByIdAndUpdate to update only the provided fields
-        await Clinic.findByIdAndUpdate(id, { $set: updates }, { new: true });
+        // Save the updated clinic document
+        await clinic.save();
 
         res.status(200).json({ message: 'Clinic updated successfully' });
     } catch (error) {
