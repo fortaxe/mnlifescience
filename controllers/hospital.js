@@ -83,7 +83,7 @@ export const getHospital = async (req, res) => {
 
 //Edit Clinic in user panel
 export const editHospital = async (req, res) => {
-    const  { doctorName, doctorNumber, pharmacyName, pharmacyNumber, grade, location, remarks }  = req.body;
+    const  { doctorName, doctorNumber, pharmacyName, pharmacyNumber, grade, location, speciality, remarks, areaName }  = req.body;
     const { id } = req.params;
 
     try {
@@ -112,12 +112,14 @@ export const editHospital = async (req, res) => {
         // Using findByIdAndUpdate to update the clinic
         await Clinic.findByIdAndUpdate(id, {
             doctorName,
-            doctorNumber: numDoctorNumber,
+            doctorNumber,
+            speciality,
             pharmacyName,
-            pharmacyNumber: numPharmacyNumber,
+            pharmacyNumber,
             grade,
             location,
-            remarks
+            remarks,
+            areaName
         }, { new: true }); // Returns the updated document
 
         res.status(200).json({ message: 'Clinic updated successfully' });
