@@ -83,16 +83,16 @@ export const getHospital = async (req, res) => {
 
 //Edit Clinic in user panel
 export const editHospital = async (req, res) => {
-    const  { doctorName, doctorNumber, pharmacyName, pharmacyNumber, grade, location, speciality, remarks, areaName }  = req.body;
+    const { doctorName, doctorNumber, pharmacyName, pharmacyNumber, grade, speciality, remarks, areaName } = req.body;
     const { id } = req.params;
 
     try {
         const clinic = await Clinic.findById(id);
 
         if (!clinic) {
-            return res.status(404).json({ message: 'Doctor not found' });
+            return res.status(404).json({ message: 'Clinic not found' });
         }
-        
+
         // Check for duplicate doctorNumber or pharmacyNumber
         if (doctorNumber && doctorNumber !== clinic.doctorNumber) {
             const existingDoctor = await Clinic.findOne({ doctorNumber });
@@ -108,19 +108,19 @@ export const editHospital = async (req, res) => {
             }
         }
 
+        // Create an object to hold the updates
+        const updates = {};
+        if (doctorName) updates.doctorName = doctorName;
+        if (doctorNumber) updates.doctorNumber = doctorNumber;
+        if (speciality) updates.speciality = speciality;
+        if (pharmacyName) updates.pharmacyName = pharmacyName;
+        if (pharmacyNumber) updates.pharmacyNumber = pharmacyNumber;
+        if (grade) updates.grade = grade;
+        if (remarks) updates.remarks = remarks;
+        if (areaName) updates.areaName = areaName;
 
-        // Using findByIdAndUpdate to update the clinic
-        await Clinic.findByIdAndUpdate(id, {
-            doctorName,
-            doctorNumber,
-            speciality,
-            pharmacyName,
-            pharmacyNumber,
-            grade,
-            location,
-            remarks,
-            areaName
-        }, { new: true }); // Returns the updated document
+        // Using findByIdAndUpdate to update only the provided fields
+        await Clinic.findByIdAndUpdate(id, { $set: updates }, { new: true });
 
         res.status(200).json({ message: 'Clinic updated successfully' });
     } catch (error) {
