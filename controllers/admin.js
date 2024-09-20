@@ -15,12 +15,15 @@ export const getAllMRs = async (req, res) => {
 // Get all Clinics/Lead Forms (for Admin Dashboard)
 export const getAllClinics = async (req, res) => {
     try {
-        const clinics = await Clinic.find().populate('createdBy', 'name mobileNumber'); // Populate MR info
+        const clinics = await Clinic.find({ isArchived: false })
+            .populate('createdBy', 'name mobileNumber') // Populate MR info
+            .sort({ createdAt: -1 }); // Sort by latest first
         res.status(200).json(clinics);
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
+
 
 // Update Clinic in Admin
 export const adminEditClinic = async (req, res) => {
@@ -147,5 +150,30 @@ export const adminDeleteClinic = async (req, res) => {
     } catch (err) {
         console.error('Error deleting doctor:', err);
         res.status(500).json({ error: err.message });
+    }
+};
+
+export const archiveClinic = async (req, res) => {
+    const { clinicId } = req.body;
+    
+    try {
+        const clinic = await Clinic.findByIdAndUpdate(clinicId, { isArchived: true }, { new: true });
+        if (!clinic) {
+            return res.status(404).json({ message: "Clinic not found" });
+        }
+        res.status(200).json({ message: "Clinic archived successfully", clinic });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+
+export const getArchivedClinics = async (req, res) => {
+    try {
+        const clinics = await Clinic.find({ isArchived: true })
+            .populate('createdBy', 'name mobileNumber')
+            .sort({ createdAt: -1 });
+        res.status(200).json(clinics);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
     }
 };

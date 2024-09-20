@@ -46,6 +46,10 @@ const clinicSchema = new mongoose.Schema({
         type: String
     },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'MR', required: true },
+    isArchived: {
+        type: Boolean,
+        default: false, // Default to false, meaning the clinic is active
+    }
 },
 { timestamps: true }
 );
