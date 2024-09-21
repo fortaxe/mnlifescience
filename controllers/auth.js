@@ -144,7 +144,6 @@ export const createMR = async (req, res) => {
 //     }
 // };
 
-
 export const editMR = async (req, res) => {
     try {
         const { id, name, mobileNumber, newPassword, confirmPassword, areaName, joiningDate, status } = req.body;
@@ -197,20 +196,23 @@ export const editMR = async (req, res) => {
     }
 };
 
-
 // Delete MR
 export const deleteMR = async (req, res) => {
     try {
         const { id } = req.body;
 
-        // Find MR by ID and remove
-        const deletedMR = await MR.findByIdAndDelete(id);
+        // Find MR by ID and archive it
+        const archivedMR = await MR.findByIdAndUpdate(
+            id,
+            { isArchived: true },
+            { new: true }
+        );
 
-        if (!deletedMR) {
+        if (!archivedMR) {
             return res.status(404).send('MR not found');
         }
 
-        res.status(200).send('MR deleted successfully');
+        res.status(200).send('MR archived successfully');
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

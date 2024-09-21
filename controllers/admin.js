@@ -5,12 +5,13 @@ import ScheduleCall from "../models/ScheduleCall.js";
 // Get all MRs (for Admin Dashboard)
 export const getAllMRs = async (req, res) => {
     try {
-        const mrs = await MR.find({ role: 'mr' }).select('-password'); // Exclude passwords
+        const mrs = await MR.find({ role: 'mr', isArchived: false }).select('-password'); // Exclude passwords and archived MRs
         res.status(200).json(mrs);
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
+
 
 // Get all Clinics/Lead Forms (for Admin Dashboard)
 export const getAllClinics = async (req, res) => {
@@ -26,8 +27,6 @@ export const getAllClinics = async (req, res) => {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
-
-
 
 // Update Clinic in Admin
 export const adminEditClinic = async (req, res) => {

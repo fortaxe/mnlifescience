@@ -10,7 +10,7 @@ router.post('/user/signin', mrSignin);
 router.post('/admin/create-mr', authMiddleware('admin'),uploadDocuments, createMR);
 router.post('/admin/create', createAdmin);
 router.patch('/admin/edit-mr', authMiddleware('admin'),editMR);
-router.delete('/admin/delete-mr', authMiddleware('admin'), deleteMR);
+router.post('/admin/delete-mr', authMiddleware('admin'), deleteMR);
 router.patch("/admin/edit/:id", authMiddleware("admin"), editAdmin);
 
 export default router;

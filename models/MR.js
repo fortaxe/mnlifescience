@@ -60,6 +60,10 @@ const mrSchema = new mongoose.Schema({
         type: String,
         enum: ['Active', 'In-Active'], 
         default: "Active"
+    },
+    isArchived: { 
+        type: Boolean,
+        default: false
     }
 },
 { timestamps: true });
