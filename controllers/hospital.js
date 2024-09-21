@@ -127,3 +127,31 @@ export const editHospital = async (req, res) => {
     }
 };
 
+// export const forgotPasswordMR = async (req, res) => {
+//     const { mobileNumber, newPassword, confirmPassword } = req.body;
+
+//     try {
+//         // Find the MR by mobile number
+//         const mr = await MR.findOne({ mobileNumber });
+//         if (!mr) {
+//             return res.status(404).json({ message: "MR not found" });
+//         }
+
+//         // Check if passwords match
+//         if (newPassword && newPassword !== confirmPassword) {
+//             return res.status(400).json({ message: "Passwords do not match" });
+//         }
+
+//         // Hash the new password if provided
+//         if (newPassword) {
+//             mr.password = await bcrypt.hash(newPassword, 10);
+//         }
+
+//         // Save the updated MR
+//         await mr.save();
+//         res.status(200).json({ message: 'MR password updated successfully' });
+//     } catch (err) {
+//         console.error('Error updating MR password:', err);
+//         res.status(500).json({ error: err.message });
+//     }
+// };

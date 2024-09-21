@@ -16,13 +16,17 @@ export const getAllMRs = async (req, res) => {
 export const getAllClinics = async (req, res) => {
     try {
         const clinics = await Clinic.find({ isArchived: false })
-            .populate('createdBy', 'name mobileNumber') // Populate MR info
-            .sort({ createdAt: -1 }); // Sort by latest first
+            .populate('createdBy', 'name mobileNumber')
+            .sort({ createdAt: -1 });
+
+        console.log("Clinics found:", clinics); // Debugging log
         res.status(200).json(clinics);
     } catch (error) {
+        console.error("Error fetching clinics:", error); // Log error for debugging
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
+
 
 
 // Update Clinic in Admin
@@ -175,5 +179,19 @@ export const getArchivedClinics = async (req, res) => {
         res.status(200).json(clinics);
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+export const unarchiveClinic = async (req, res) => {
+    const { clinicId } = req.body;
+
+    try {
+        const clinic = await Clinic.findByIdAndUpdate(clinicId, { isArchived: false }, { new: true });
+        if (!clinic) {
+            return res.status(404).json({ message: "Clinic not found" });
+        }
+        res.status(200).json({ message: "Clinic unarchived successfully", clinic });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
     }
 };
