@@ -3,7 +3,7 @@ import MR from "../models/MR.js";
 
 // Create Clinic/Lead Form
 export const createHospital = async (req, res) => {
-    const { doctorName, doctorNumber,speciality, pharmacyName, pharmacyNumber, grade, location, remarks,areaName } = req.body;
+    const { doctorName, doctorNumber,speciality, pharmacyName, pharmacyNumber, grade, location, remarks,areaName, url } = req.body;
 
     try {
         const existingDoctor = await Clinic.findOne({ doctorNumber });
@@ -28,6 +28,7 @@ export const createHospital = async (req, res) => {
             location,
             remarks,
             areaName,
+            url,
             createdBy: req.user.id
         });
 

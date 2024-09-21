@@ -37,6 +37,9 @@ const clinicSchema = new mongoose.Schema({
             type: [Number]
         }
     },
+    url: {
+        type: String
+    },
     remarks: String,
     notes: {
         type: String,
