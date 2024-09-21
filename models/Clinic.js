@@ -29,13 +29,7 @@ const clinicSchema = new mongoose.Schema({
     },
     grade: String,
     location: {
-        type: {
-            type: String,
-            enum: ['Point']
-        },
-        coordinates: {
-            type: [Number]
-        }
+        type: String
     },
     remarks: String,
     notes: {
