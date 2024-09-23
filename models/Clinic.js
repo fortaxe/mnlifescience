@@ -11,7 +11,7 @@ const clinicSchema = new mongoose.Schema({
         unique: true,
         required: true,
     },
-    speciality:{
+    speciality: {
         type: String,
     },
     doctorWhatsAppContacted: {
@@ -28,22 +28,13 @@ const clinicSchema = new mongoose.Schema({
         default: false,
     },
     grade: String,
-    location: {
-        type: {
-            type: String,
-            enum: ['Point']
-        },
-        coordinates: {
-            type: [Number]
-        }
-    },
     url: {
         type: String
     },
     remarks: String,
     notes: {
         type: String,
-        default: '', 
+        default: '',
     },
     areaName: {
         type: String
@@ -52,20 +43,14 @@ const clinicSchema = new mongoose.Schema({
     isArchived: {
         type: Boolean,
         default: false, // Default to false, meaning the clinic is active
-    }
+    },
+    followUps: [{
+        followUpDate: { type: Date, default: Date.now },
+        remarks: { type: String, required: true },
+        url: { type: String }
+    }],
 },
-{ timestamps: true }
+    { timestamps: true }
 );
-
-// Middleware to delete related ScheduleCall when a clinic is deleted
-clinicSchema.pre("findOneAndDelete", async function (next) {
-    try {
-        const clinicId = this.getQuery()._id;
-        await ScheduleCall.deleteMany({ clinic: clinicId });  // Remove all schedules related to the clinic
-        next();
-    } catch (error) {
-        next(error);
-    }
-});
 
 export default mongoose.model('Clinic', clinicSchema);

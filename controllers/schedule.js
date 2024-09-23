@@ -28,7 +28,7 @@ export const createDoctorScheduleCall = async (req, res) => {
         });
 
         await scheduleCall.save();
-        res.status(201).json({ message: 'Doctor schedule call created successfully', scheduleCall });
+        res.status(201).json({ message: 'Doctor schedule call created successfully' });
     } catch (error) {
         console.error('Error creating doctor schedule call:', error);
         res.status(500).json({ message: 'Server error' });
@@ -61,7 +61,7 @@ export const createPharmacyScheduleCall = async (req, res) => {
         });
 
         await scheduleCall.save();
-        res.status(201).json({ message: 'Pharmacy schedule call created successfully', scheduleCall });
+        res.status(201).json({ message: 'Pharmacy schedule call created successfully' });
     } catch (error) {
         console.error('Error creating pharmacy schedule call:', error);
         res.status(500).json({ message: 'Server error' });
@@ -167,43 +167,77 @@ export const getTodaysScheduleCalls = async (req, res) => {
     try {
         const today = new Date();
         today.setHours(0, 0, 0, 0); // Start of the day
-
         const endOfDay = new Date(today);
         endOfDay.setHours(23, 59, 59, 999); // End of the day
 
-        const scheduleCalls = await ScheduleCall.find({
-            date: { $gte: today, $lt: endOfDay }
-        }).populate('clinic');
+        const scheduleCalls = await ScheduleCall.aggregate([
+            {
+                $match: {
+                    date: { $gte: today, $lt: endOfDay },
+                    type: { $in: ['doctor', 'pharmacy'] } // Only match 'doctor' or 'pharmacy'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'clinics', // Collection to join
+                    localField: 'clinic',
+                    foreignField: '_id',
+                    as: 'clinicDetails'
+                }
+            },
+            {
+                $unwind: '$clinicDetails' // Decompose array to single object
+            },
+            {
+                $project: {
+                    scheduleCallId: '$_id',
+                    date: 1,
+                    time: 1, // Time as a Date
+                    type: 1,
+                    status: '$updateStatus',
+                    doctorNumber: {
+                        $cond: {
+                            if: { $eq: ['$type', 'doctor'] },
+                            then: '$clinicDetails.doctorNumber',
+                            else: null
+                        }
+                    },
+                    doctorName: {
+                        $cond: {
+                            if: { $eq: ['$type', 'doctor'] },
+                            then: '$clinicDetails.doctorName',
+                            else: null
+                        }
+                    },
+                    pharmacyNumber: {
+                        $cond: {
+                            if: { $eq: ['$type', 'pharmacy'] },
+                            then: '$clinicDetails.pharmacyNumber',
+                            else: null
+                        }
+                    },
+                    pharmacyName: {
+                        $cond: {
+                            if: { $eq: ['$type', 'pharmacy'] },
+                            then: '$clinicDetails.pharmacyName',
+                            else: null
+                        }
+                    }
+                }
+            },
+            {
+                $sort: {
+                    time: 1 // Sort by time in ascending order
+                }
+            }
+        ]);
 
-        const result = scheduleCalls.map(call => ({
-            scheduleCallId: call._id,
-            date: call.date,
-            time: call.time,
-            type: call.type,
-            status: call.updateStatus,
-            ...(call.type === 'doctor' || call.type === 'both' ? {
-                doctorNumber: call.clinic.doctorNumber,
-                dcotorName: call.clinic.doctorName
-            } : {}),
-            ...(call.type === 'pharmacy' || call.type === 'both' ? {
-                pharmacyNumber: call.clinic.pharmacyNumber,
-                pharmacyName: call.clinic.pharmacyName
-            } : {})
-        }))
-        .sort((a, b) => {
-            // Compare times first
-            if (a.time !== b.time) {
-                return a.time.localeCompare(b.time);
-            }          
-        });
-        console.log(result)
-
-        res.status(200).json({ scheduleCalls: result });
+        res.status(200).json({ scheduleCalls });
     } catch (error) {
         console.error('Error retrieving today\'s schedule calls:', error);
         res.status(500).json({ message: 'Server error' });
     }
-};
+};               
 
 // Get Upcoming Schedule Calls
 export const getUpcomingScheduleCalls = async (req, res) => {
@@ -211,39 +245,67 @@ export const getUpcomingScheduleCalls = async (req, res) => {
         const today = new Date();
         const endOfToday = new Date(today.setHours(23, 59, 59, 999)); // End of the day
 
-        const scheduleCalls = await ScheduleCall.find({
-            date: { $gt: endOfToday }
-        }).populate('clinic');
-
-        // Log the raw data to debug the issue
-        console.log('Raw Schedule Calls Data:', scheduleCalls);
-
-        const result = scheduleCalls.map(call => ({
-            scheduleCallId: call._id,
-            date: call.date,
-            time: call.time,
-            type: call.type,
-            status: call.updateStatus,
-            ...(call.type === 'doctor' || call.type === 'both' ? {
-                doctorNumber: call.clinic?.doctorNumber, // Use optional chaining to handle null values
-                doctorName: call.clinic?.doctorName
-            } : {}),
-            ...(call.type === 'pharmacy' || call.type === 'both' ? {
-                pharmacyNumber: call.clinic?.pharmacyNumber,
-                pharmacyName: call.clinic?.pharmacyName
-            } : {})
-        }))
-        .sort((a, b) => {
-            // Compare times first
-            if (a.time !== b.time) {
-                return a.time.localeCompare(b.time);
+        const upcomingScheduleCalls = await ScheduleCall.aggregate([
+            {
+                $match: {
+                    date: { $gt: endOfToday }, // Match schedules after today
+                    type: { $in: ['doctor', 'pharmacy'] } // Only match 'doctor' or 'pharmacy'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'clinics', // Collection to join
+                    localField: 'clinic',
+                    foreignField: '_id',
+                    as: 'clinicDetails'
+                }
+            },
+            {
+                $unwind: '$clinicDetails' // Decompose array to single object
+            },
+            {
+                $project: {
+                    scheduleCallId: '$_id',
+                    date: 1,
+                    time: 1, // Time as a Date
+                    type: 1,
+                    status: '$updateStatus',
+                    doctorNumber: {
+                        $cond: {
+                            if: { $eq: ['$type', 'doctor'] },
+                            then: '$clinicDetails.doctorNumber',
+                            else: null
+                        }
+                    },
+                    doctorName: {
+                        $cond: {
+                            if: { $eq: ['$type', 'doctor'] },
+                            then: '$clinicDetails.doctorName',
+                            else: null
+                        }
+                    },
+                    pharmacyNumber: {
+                        $cond: {
+                            if: { $eq: ['$type', 'pharmacy'] },
+                            then: '$clinicDetails.pharmacyNumber',
+                            else: null
+                        }
+                    },
+                    pharmacyName: {
+                        $cond: {
+                            if: { $eq: ['$type', 'pharmacy'] },
+                            then: '$clinicDetails.pharmacyName',
+                            else: null
+                        }
+                    }
+                }
+            },
+            {
+                $sort: { date: 1, time: 1 } // Sort by 'date' and then by 'time' (ascending)
             }
-            // If times are the same, compare dates
-            return new Date(a.date) - new Date(b.date);
-        });
-        console.log(result)
+        ]);
 
-        res.status(200).json({ scheduleCalls: result });
+        res.status(200).json({ scheduleCalls: upcomingScheduleCalls });
     } catch (error) {
         console.error('Error retrieving upcoming schedule calls:', error);
         res.status(500).json({ message: 'Server error' });

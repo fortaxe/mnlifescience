@@ -128,6 +128,32 @@ export const editHospital = async (req, res) => {
     }
 };
 
+// Add a follow-up to a clinic
+export const addFollowUp = async (req, res) => {
+    const { remarks, url } = req.body;
+    const { id } = req.params;
+
+    try {
+        const clinic = await Clinic.findById(id);
+        if (!clinic) {
+            return res.status(404).json({ message: 'Clinic not found' });
+        }
+
+        // Add the new follow-up with current date
+        clinic.followUps.push({
+            remarks,
+            url,
+            date: new Date(),
+        });
+
+        await clinic.save();
+        res.status(201).json({ message: 'Follow-up added successfully' });
+    } catch (error) {
+        console.error('Error adding follow-up:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
 // export const forgotPasswordMR = async (req, res) => {
 //     const { mobileNumber, newPassword, confirmPassword } = req.body;
 
