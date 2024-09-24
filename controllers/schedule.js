@@ -1,11 +1,8 @@
 import ScheduleCall from "../models/ScheduleCall.js";
 import Clinic from "../models/Clinic.js";
 
-import { fromZonedTime, toZonedTime } from 'date-fns-tz';
 import { startOfDay, endOfDay } from 'date-fns';
-
-
-const TIMEZONE = 'Asia/Kolkata'; // Indian Standard Time
+import * as dateFnsTz from 'date-fns-tz';
 
 // Create Doctor Schedule Call
 export const createDoctorScheduleCall = async (req, res) => {
@@ -170,12 +167,15 @@ export const updateScheduleCall = async (req, res) => {
 // Get Today's Schedule Calls
 export const getTodaysScheduleCalls = async (req, res) => {
     try {
+        const TIMEZONE = 'Asia/Kolkata';  // Or your preferred timezone
         const now = new Date();
-        const todayStart = toZonedTime(startOfDay(fromZonedTime(now, TIMEZONE)), TIMEZONE);
-        const todayEnd = toZonedTime(endOfDay(fromZonedTime(now, TIMEZONE)), TIMEZONE);
+        const zonedNow = dateFnsTz.toZonedTime(now, TIMEZONE);
+        const todayStart = dateFnsTz.toZonedTime(startOfDay(dateFnsTz.fromZonedTime(zonedNow, TIMEZONE)), TIMEZONE);
+        const todayEnd = dateFnsTz.toZonedTime(endOfDay(dateFnsTz.fromZonedTime(zonedNow, TIMEZONE)), TIMEZONE);
 
-        console.log('Today Start:', todayStart);
-        console.log('Today End:', todayEnd);
+        console.log('Today Start:', todayStart.toISOString());
+        console.log('Today End:', todayEnd.toISOString());
+
 
         const scheduleCalls = await ScheduleCall.aggregate([
             {
@@ -239,7 +239,13 @@ export const getTodaysScheduleCalls = async (req, res) => {
             }
         ]);
 
-        console.log('Schedule Calls:', scheduleCalls);
+        
+        console.log('Number of schedule calls found:', scheduleCalls.length);
+        if (scheduleCalls.length > 0) {
+            console.log('First schedule call:', JSON.stringify(scheduleCalls[0], null, 2));
+        } else {
+            console.log('No schedule calls found for today');
+        }
 
         res.status(200).json({ scheduleCalls: scheduleCalls });
     } catch (error) {
