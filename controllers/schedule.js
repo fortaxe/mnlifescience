@@ -236,7 +236,7 @@ export const getTodaysScheduleCalls = async (req, res) => {
             }
         ]);
 
-        res.status(200).json({ scheduleCalls });
+        res.status(200).json({ scheduleCalls: scheduleCalls });
     } catch (error) {
         console.error('Error retrieving today\'s schedule calls:', error);
         res.status(500).json({ message: 'Server error' });
