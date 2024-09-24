@@ -167,15 +167,12 @@ export const updateScheduleCall = async (req, res) => {
 // Get Today's Schedule Calls
 export const getTodaysScheduleCalls = async (req, res) => {
     try {
-        const TIMEZONE = 'Asia/Kolkata';  // Or your preferred timezone
-        const now = new Date();
-        const zonedNow = dateFnsTz.toZonedTime(now, TIMEZONE);
-        const todayStart = dateFnsTz.toZonedTime(startOfDay(dateFnsTz.fromZonedTime(zonedNow, TIMEZONE)), TIMEZONE);
-        const todayEnd = dateFnsTz.toZonedTime(endOfDay(dateFnsTz.fromZonedTime(zonedNow, TIMEZONE)), TIMEZONE);
+        // Use UTC dates in backend
+        const todayStart = startOfDay(new Date());
+        const todayEnd = endOfDay(new Date());
 
-        console.log('Today Start:', todayStart.toISOString());
-        console.log('Today End:', todayEnd.toISOString());
-
+        console.log('Today Start (UTC):', todayStart.toISOString());
+        console.log('Today End (UTC):', todayEnd.toISOString());
 
         const scheduleCalls = await ScheduleCall.aggregate([
             {
@@ -257,9 +254,7 @@ export const getTodaysScheduleCalls = async (req, res) => {
 // Get Upcoming Schedule Calls
 export const getUpcomingScheduleCalls = async (req, res) => {
     try {
-        const now = new Date();
-        const todayEnd = endOfDay(fromZonedTime(now, TIMEZONE));
-
+        const todayEnd = endOfDay(new Date());
 
         const upcomingScheduleCalls = await ScheduleCall.aggregate([
             {
