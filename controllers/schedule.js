@@ -1,6 +1,11 @@
 import ScheduleCall from "../models/ScheduleCall.js";
 import Clinic from "../models/Clinic.js";
-import { response } from "express";
+
+import { fromZonedTime, toZonedTime } from 'date-fns-tz';
+import { startOfDay, endOfDay } from 'date-fns';
+
+
+const TIMEZONE = 'Asia/Kolkata'; // Indian Standard Time
 
 // Create Doctor Schedule Call
 export const createDoctorScheduleCall = async (req, res) => {
@@ -165,16 +170,15 @@ export const updateScheduleCall = async (req, res) => {
 // Get Today's Schedule Calls
 export const getTodaysScheduleCalls = async (req, res) => {
     try {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0); // Start of the day
-        const endOfDay = new Date(today);
-        endOfDay.setHours(23, 59, 59, 999); // End of the day
+        const now = new Date();
+        const todayStart = toZonedTime(startOfDay(fromZonedTime(now, TIMEZONE)), TIMEZONE);
+        const todayEnd = toZonedTime(endOfDay(fromZonedTime(now, TIMEZONE)), TIMEZONE);
 
         const scheduleCalls = await ScheduleCall.aggregate([
             {
                 $match: {
-                    date: { $gte: today, $lt: endOfDay },
-                    type: { $in: ['doctor', 'pharmacy'] } // Only match 'doctor' or 'pharmacy'
+                    date: { $gte: todayStart, $lt: todayEnd },
+                    type: { $in: ['doctor', 'pharmacy'] }
                 }
             },
             {
@@ -242,13 +246,14 @@ export const getTodaysScheduleCalls = async (req, res) => {
 // Get Upcoming Schedule Calls
 export const getUpcomingScheduleCalls = async (req, res) => {
     try {
-        const today = new Date();
-        const endOfToday = new Date(today.setHours(23, 59, 59, 999)); // End of the day
+        const now = new Date();
+        const todayEnd = endOfDay(fromZonedTime(now, TIMEZONE));
+
 
         const upcomingScheduleCalls = await ScheduleCall.aggregate([
             {
                 $match: {
-                    date: { $gt: endOfToday }, // Match schedules after today
+                    date: { $gt: todayEnd }, // Match schedules after today
                     type: { $in: ['doctor', 'pharmacy'] } // Only match 'doctor' or 'pharmacy'
                 }
             },
