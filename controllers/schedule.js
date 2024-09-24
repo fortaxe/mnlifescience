@@ -174,6 +174,9 @@ export const getTodaysScheduleCalls = async (req, res) => {
         const todayStart = toZonedTime(startOfDay(fromZonedTime(now, TIMEZONE)), TIMEZONE);
         const todayEnd = toZonedTime(endOfDay(fromZonedTime(now, TIMEZONE)), TIMEZONE);
 
+        console.log('Today Start:', todayStart);
+        console.log('Today End:', todayEnd);
+
         const scheduleCalls = await ScheduleCall.aggregate([
             {
                 $match: {
@@ -235,6 +238,8 @@ export const getTodaysScheduleCalls = async (req, res) => {
                 }
             }
         ]);
+
+        console.log('Schedule Calls:', scheduleCalls);
 
         res.status(200).json({ scheduleCalls: scheduleCalls });
     } catch (error) {
