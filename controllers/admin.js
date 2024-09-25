@@ -126,7 +126,7 @@ export const editNotes = async (req, res) => {
             return res.status(404).json({ message: "Clinic not found for this schedule!" });
         }
 
-        // Update the clinic notes
+        // Update the clinic notess
         schedule.clinic.notes = notes || schedule.clinic.notes;
 
         await schedule.clinic.save();
