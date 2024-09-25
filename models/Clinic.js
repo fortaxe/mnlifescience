@@ -53,4 +53,18 @@ const clinicSchema = new mongoose.Schema({
     { timestamps: true }
 );
 
+clinicSchema.pre("findOneAndDelete", async function (next) {
+    try {
+      const clinic = await this.model.findOne(this.getFilter());
+      if (clinic) {
+        await ScheduleCall.deleteMany({ clinic: clinic._id });
+        console.log(`Deleted all schedule calls related to clinic ${clinic._id}`);
+      }
+      next();
+    } catch (err) {
+      next(err);
+    }
+  });
+
 export default mongoose.model('Clinic', clinicSchema);
+

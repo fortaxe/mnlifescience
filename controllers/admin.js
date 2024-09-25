@@ -142,8 +142,8 @@ export const adminDeleteClinic = async (req, res) => {
     try {
         const { id } = req.body;
 
-        // Find MR by ID and remove
-        const deletedClinic = await Clinic.findByIdAndDelete(id);
+          // Use findOneAndDelete instead of findByIdAndDelete
+          const deletedClinic = await Clinic.findByIdAndDelete(id);
 
         if (!deletedClinic) {
             return res.status(404).send('Doctor not found');
