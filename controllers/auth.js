@@ -280,7 +280,7 @@ export const editAdmin = async (req, res) => {
 
 export const updateAadhaarCard = async (req, res) => {
     try {
-        const { mrId } = req.params;  // Get MR ID from params
+        const { mrId } = req.body;  // Get MR ID from params
 
         // Check if a new Aadhaar card image is provided
         const aadhaarCard = req.files?.['aadhaarCard']?.[0]?.path || null;
