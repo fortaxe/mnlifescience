@@ -1,7 +1,6 @@
 import express from 'express';
 import { getAllMRs, getAllClinics, adminEditClinic, getNotes, editNotes, adminDeleteClinic, getArchivedClinics, archiveClinic, unarchiveClinic } from '../controllers/admin.js';
 import authMiddleware from '../middleware/auth.js';
-import { editPanCard, updateAadhaarCard } from "../controllers/auth.js";
 
 const router = express.Router();
 
@@ -23,9 +22,5 @@ router.delete('/admin/delete-clinic', authMiddleware('admin'), adminDeleteClinic
 
 router.post('/admin/archieve-clinic', authMiddleware('admin'), archiveClinic);
 router.patch('/admin/unarchieve-clinic', authMiddleware('admin'), unarchiveClinic);
-
-router.patch('/admin/update-adhaar', authMiddleware('admin'), updateAadhaarCard);
-
-router.patch('/admin/update-pan', authMiddleware('admin'), editPanCard);
 
 export default router;
