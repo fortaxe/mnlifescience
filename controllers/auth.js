@@ -311,6 +311,9 @@ export const updateAadhaarCard = async (req, res) => {
 
 export const editPanCard = async (req, res) => {
     try {
+        console.log("Received request body:", req.body);
+        console.log("Received files:", req.files);
+        
         const { mrId } = req.body;
         console.log("MR ID:", mrId);
         const panCard = req.files?.['panCard']?.[0]?.path || null;
