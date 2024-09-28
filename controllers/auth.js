@@ -276,3 +276,53 @@ export const editAdmin = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
+
+export const updateAadhaarCard = async (req, res) => {
+    try {
+        const { mrId } = req.params;  // Get MR ID from params
+
+        // Check if a new Aadhaar card image is provided
+        const aadhaarCard = req.files?.['aadhaarCard']?.[0]?.path || null;
+
+        const existingMR = await MR.findById(mrId);
+        if (!existingMR) {
+            return res.status(404).json({ message: "MR not found" });
+        }
+
+        // Only update Aadhaar card if a new image is provided
+        if (aadhaarCard) {
+            existingMR.aadhaarCard = aadhaarCard;
+        }
+
+        await existingMR.save();
+        return res.status(200).json({ message: 'Aadhaar card updated successfully' });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ error: err.message });
+    }
+};
+
+export const editPanCard = async (req, res) => {
+    try {
+        const { mrId } = req.body;
+        const panCard = req.files?.['panCard']?.[0]?.path || null;
+
+        const mr = await MR.findById(mrId);
+        if (!mr) {
+            return res.status(404).json({ message: "MR not found" });
+        }
+
+        // If PAN image is provided, update it; otherwise, leave it unchanged.
+        if (panCard) {
+            mr.panCard = panCard;
+        }
+
+        await mr.save();
+
+        return res.status(200).json({ message: 'PAN card updated successfully' });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ error: err.message });
+    }
+};
