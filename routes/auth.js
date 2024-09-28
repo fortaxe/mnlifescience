@@ -12,8 +12,8 @@ router.post('/admin/create', createAdmin);
 router.patch('/admin/edit-mr', authMiddleware('admin'),editMR);
 router.post('/admin/delete-mr', authMiddleware('admin'), deleteMR);
 router.patch("/admin/edit/:id", authMiddleware("admin"), editAdmin);
-router.patch('/admin/update-aadhaar', authMiddleware('admin'), updateAadhaarCard);
+router.patch('/admin/update-aadhaar', authMiddleware('admin'), uploadDocuments, updateAadhaarCard);
 
-router.patch('/admin/update-pan', authMiddleware('admin'), editPanCard);
+router.patch('/admin/update-pan', authMiddleware('admin'),uploadDocuments, editPanCard);
 
 export default router;
