@@ -280,25 +280,31 @@ export const editAdmin = async (req, res) => {
 
 export const updateAadhaarCard = async (req, res) => {
     try {
+        console.log("Incoming request for Aadhaar card update:", req.body, req.files);
         const { mrId } = req.body;  // Get MR ID from params
+        console.log("MR ID:", mrId);
 
         // Check if a new Aadhaar card image is provided
         const aadhaarCard = req.files?.['aadhaarCard']?.[0]?.path || null;
+        console.log("Aadhaar card path:", aadhaarCard);
 
         const existingMR = await MR.findById(mrId);
         if (!existingMR) {
+            console.log("MR not found for ID:", mrId);
             return res.status(404).json({ message: "MR not found" });
         }
 
         // Only update Aadhaar card if a new image is provided
         if (aadhaarCard) {
             existingMR.aadhaarCard = aadhaarCard;
+            console.log("Aadhaar card updated to:", aadhaarCard);
         }
 
         await existingMR.save();
+        console.log("MR saved successfully:", existingMR);
         return res.status(200).json({ message: 'Aadhaar card updated successfully' });
     } catch (err) {
-        console.log(err);
+        console.error("Error updating Aadhaar card:", err);
         res.status(500).json({ error: err.message });
     }
 };
@@ -306,23 +312,27 @@ export const updateAadhaarCard = async (req, res) => {
 export const editPanCard = async (req, res) => {
     try {
         const { mrId } = req.body;
+        console.log("MR ID:", mrId);
         const panCard = req.files?.['panCard']?.[0]?.path || null;
+        console.log("PAN card path:", panCard);
 
         const mr = await MR.findById(mrId);
         if (!mr) {
+            console.log("MR not found for ID:", mrId);
             return res.status(404).json({ message: "MR not found" });
         }
 
         // If PAN image is provided, update it; otherwise, leave it unchanged.
         if (panCard) {
             mr.panCard = panCard;
+            console.log("PAN card updated to:", panCard);
         }
 
         await mr.save();
-
+        console.log("MR saved successfully:", mr);
         return res.status(200).json({ message: 'PAN card updated successfully' });
     } catch (err) {
-        console.log(err);
+        console.error("Error updating PAN card:", err);
         return res.status(500).json({ error: err.message });
     }
 };
