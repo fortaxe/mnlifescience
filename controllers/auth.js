@@ -295,8 +295,11 @@ export const updateAadhaarCard = async (req, res) => {
             existingMR.aadhaarCard = aadhaarCard;
         }
 
-        await existingMR.save();
-        return res.status(200).json({ message: 'Aadhaar card updated successfully' });
+        const updatedMR = await existingMR.save();
+        return res.status(200).json({
+            message: 'Aadhaar card updated successfully',
+            updatedMR: updatedMR
+        });
     } catch (err) {
         console.error("Error updating Aadhaar card:", err);
         res.status(500).json({ error: err.message });
@@ -319,8 +322,11 @@ export const editPanCard = async (req, res) => {
             mr.panCard = panCard;
         }
 
-        await mr.save();
-        return res.status(200).json({ message: 'PAN card updated successfully' });
+        const updatedMR = await mr.save();
+        return res.status(200).json({ 
+            message: 'PAN card updated successfully',
+            updatedMR: updatedMR
+        });
     } catch (err) {
         console.error("Error updating PAN card:", err);
         return res.status(500).json({ error: err.message });
