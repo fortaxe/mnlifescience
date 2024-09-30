@@ -3,7 +3,7 @@ import MR from "../models/MR.js";
 
 // Create Clinic/Lead Form Form
 export const createHospital = async (req, res) => {
-    const { doctorName, doctorNumber,speciality, pharmacyName, pharmacyNumber, grade, location, remarks,areaName, url } = req.body;
+    const { hospitalName, doctorName, doctorNumber,speciality, pharmacyName, pharmacyNumber, grade, location, remarks,areaName, url } = req.body;
 
     try {
         const existingDoctor = await Clinic.findOne({ doctorNumber });
@@ -19,6 +19,7 @@ export const createHospital = async (req, res) => {
         }
 
         const clinic = new Clinic({
+            hospitalName,
             doctorName,
             doctorNumber,
             speciality,
@@ -84,7 +85,7 @@ export const getHospital = async (req, res) => {
 
 //Edit Clinic in user panel
 export const editHospital = async (req, res) => {
-    const { doctorName, doctorNumber, pharmacyName, pharmacyNumber, grade, speciality, remarks, areaName } = req.body;
+    const { hospitalName, doctorName, doctorNumber, pharmacyName, pharmacyNumber, grade, speciality, remarks, areaName } = req.body;
     const { id } = req.params;
 
     try {
@@ -110,6 +111,7 @@ export const editHospital = async (req, res) => {
         }
 
         // Update the fields only if provided in the request body
+        clinic.hospitalName = hospitalName || clinic.hospitalName;
         clinic.doctorName = doctorName || clinic.doctorName;
         clinic.doctorNumber = doctorNumber || clinic.doctorNumber;
         clinic.pharmacyName = pharmacyName || clinic.pharmacyName;

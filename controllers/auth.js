@@ -218,6 +218,45 @@ export const deleteMR = async (req, res) => {
     }
 };
 
+// Unarchive MR
+export const unarchiveMR = async (req, res) => {
+    try {
+        const { id } = req.body;
+
+        // Find MR by ID and unarchive it (set isArchived to false)
+        const unarchivedMR = await MR.findByIdAndUpdate(
+            id,
+            { isArchived: false },
+            { new: true }
+        );
+
+        if (!unarchivedMR) {
+            return res.status(404).send("MR not found");
+        }
+
+        res.status(200).send("MR unarchived successfully");
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Get all archived MRs
+export const getArchivedMRs = async (req, res) => {
+    try {
+        // Find all MRs where isArchived is true
+        const archivedMRs = await MR.find({ isArchived: true });
+
+        if (!archivedMRs || archivedMRs.length === 0) {
+            return res.status(404).send("No archived MRs found");
+        }
+
+        res.status(200).json(archivedMRs);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+
 // Create Admin (used only once)
 export const createAdmin = async (req, res) => {
     try {

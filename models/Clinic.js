@@ -2,6 +2,9 @@ import mongoose from 'mongoose';
 import ScheduleCall from "./ScheduleCall.js";
 
 const clinicSchema = new mongoose.Schema({
+    hospitalName: {
+        type: String
+    },
     doctorName: {
         type: String,
         required: true,
