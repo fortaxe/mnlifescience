@@ -1,7 +1,8 @@
 import express from 'express';
-import { adminSignin, mrSignin, createMR, createAdmin, editMR, deleteMR, editAdmin, updateAadhaarCard, editPanCard } from '../controllers/auth.js';
+import { adminSignin, mrSignin, createMR, createAdmin, editMR, deleteMR, editAdmin, updateAadhaarCard, editPanCard, unarchiveMR, getArchivedMRs } from '../controllers/auth.js';
 import authMiddleware from '../middleware/auth.js';
 import { uploadDocuments } from "../middleware/uploadDocuments.js";
+import { get } from "mongoose";
 
 const router = express.Router();
 
@@ -15,5 +16,7 @@ router.patch("/admin/edit/:id", authMiddleware("admin"), editAdmin);
 router.patch('/admin/update-aadhaar', authMiddleware('admin'), uploadDocuments, updateAadhaarCard);
 
 router.patch('/admin/update-pan', authMiddleware('admin'),uploadDocuments, editPanCard);
+router.post("/admin/unarchive-mr", authMiddleware("admin"), uploadDocuments, unarchiveMR);
+router.get("/admin/get-archived-mrs", authMiddleware("admin"), getArchivedMRs);
 
 export default router;

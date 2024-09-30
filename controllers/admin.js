@@ -30,7 +30,7 @@ export const getAllClinics = async (req, res) => {
 
 // Update Clinic in Admin
 export const adminEditClinic = async (req, res) => {
-    const { id, doctorName, doctorNumber, pharmacyName, pharmacyNumber, grade, location, remarks, notes, doctorWhatsAppContacted, pharmacyWhatsAppContacted } = req.body;
+    const { id, hospitalName, doctorName,speciality, doctorNumber, pharmacyName, pharmacyNumber, grade, location, remarks, notes, doctorWhatsAppContacted, pharmacyWhatsAppContacted } = req.body;
 
     try {
         // Find the clinic by its ID
@@ -62,6 +62,8 @@ export const adminEditClinic = async (req, res) => {
 
         // Update clinic details
         clinic.doctorName = doctorName || clinic.doctorName;
+        clinic.speciality = speciality || clinic.speciality;
+        clinic.hospitalName = hospitalName || clinic.hospitalName;
         clinic.doctorNumber = doctorNumber || clinic.doctorNumber;
         clinic.pharmacyName = pharmacyName || clinic.pharmacyName;
         clinic.pharmacyNumber = pharmacyNumber || clinic.pharmacyNumber;
