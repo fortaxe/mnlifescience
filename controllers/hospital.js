@@ -16,9 +16,7 @@ export const createHospital = async (req, res) => {
         return res.status(403).json({ message: "You are archived and cannot create hospitals." });
     }
 
-    if (!req.files || !req.files['doctorImage'] || req.files['doctorImage'].length === 0) {
-        return res.status(400).json({ message: 'Doctor image is required' });
-    }
+    
 
     const { hospitalName, doctorName, doctorNumber, speciality, pharmacyName, pharmacyNumber, grade, remarks, areaName, url } = req.body;
 
@@ -36,6 +34,12 @@ export const createHospital = async (req, res) => {
         }
 
          const doctorImage = req.files['doctorImage'][0].path;
+
+           // If doctorImage is required, you can validate it here:
+        if (!doctorImage) {
+            return res.status(400).json({ message: 'Doctor image is required.' });
+        }
+
 
         const clinic = new Clinic({
             hospitalName,
@@ -185,10 +189,6 @@ export const addFollowUp = async (req, res) => {
         return res.status(403).json({ message: "You are archived" });
     }
 
-    if (!req.files || !req.files['followUpImage'] || req.files['followUpImage'].length === 0) {
-        return res.status(400).json({ message: 'Follow-up image is required' });
-    }
-
     const { remarks, url } = req.body;
     const { id } = req.params;
 
@@ -199,6 +199,11 @@ export const addFollowUp = async (req, res) => {
         }
 
         const followUpImage = req.files['followUpImage'][0].path;
+
+          // If doctorImage is required, you can validate it here:
+          if (!followUpImage) {
+            return res.status(400).json({ message: 'followUpImage image is required.' });
+        }
 
         // Add the new follow-up with current date
         clinic.followUps.push({
