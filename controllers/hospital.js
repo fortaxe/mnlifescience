@@ -15,7 +15,12 @@ export const createHospital = async (req, res) => {
     if (mr.isArchived) {
         return res.status(403).json({ message: "You are archived and cannot create hospitals." });
     }
-    const { hospitalName, doctorName, doctorNumber, speciality, pharmacyName, pharmacyNumber, grade, location, remarks, areaName, url } = req.body;
+
+    if (!req.files || !req.files['doctorImage'] || req.files['doctorImage'].length === 0) {
+        return res.status(400).json({ message: 'Doctor image is required' });
+    }
+
+    const { hospitalName, doctorName, doctorNumber, speciality, pharmacyName, pharmacyNumber, grade, remarks, areaName, url } = req.body;
 
     try {
         const existingDoctor = await Clinic.findOne({ doctorNumber });
@@ -30,6 +35,8 @@ export const createHospital = async (req, res) => {
             }
         }
 
+         const doctorImage = req.files['doctorImage'][0].path;
+
         const clinic = new Clinic({
             hospitalName,
             doctorName,
@@ -38,10 +45,10 @@ export const createHospital = async (req, res) => {
             pharmacyName,
             pharmacyNumber,
             grade,
-            location,
             remarks,
             areaName,
             url,
+            doctorImage,
             createdBy: req.user.id
         });
 
@@ -169,6 +176,7 @@ export const editHospital = async (req, res) => {
 // Add a follow-up to a clinic
 export const addFollowUp = async (req, res) => {
     const mr = await MR.findById(req.user.id);
+
     if (!mr) {
         return res.status(404).json({ message: "MR not found" });
     }
@@ -176,6 +184,11 @@ export const addFollowUp = async (req, res) => {
     if (mr.isArchived) {
         return res.status(403).json({ message: "You are archived" });
     }
+
+    if (!req.files || !req.files['followUpImage'] || req.files['followUpImage'].length === 0) {
+        return res.status(400).json({ message: 'Follow-up image is required' });
+    }
+
     const { remarks, url } = req.body;
     const { id } = req.params;
 
@@ -185,11 +198,14 @@ export const addFollowUp = async (req, res) => {
             return res.status(404).json({ message: 'Clinic not found' });
         }
 
+        const followUpImage = req.files['followUpImage'][0].path;
+
         // Add the new follow-up with current date
         clinic.followUps.push({
             remarks,
             url,
             date: new Date(),
+            followUpImage
         });
 
         await clinic.save();
