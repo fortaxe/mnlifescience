@@ -197,7 +197,7 @@ export const editMR = async (req, res) => {
 };
 
 // Delete MR
-export const deleteMR = async (req, res) => {
+export const archiveMR = async (req, res) => {
     try {
         const { id } = req.body;
 
@@ -244,7 +244,7 @@ export const unarchiveMR = async (req, res) => {
 export const getArchivedMRs = async (req, res) => {
     try {
         // Find all MRs where isArchived is true
-        const archivedMRs = await MR.find({ isArchived: true });
+        const archivedMRs = await MR.find({ isArchived: true }).sort({ updatedAt: -1 });
 
         if (!archivedMRs || archivedMRs.length === 0) {
             return res.status(404).send("No archived MRs found");
@@ -255,6 +255,28 @@ export const getArchivedMRs = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
+// Delete MR
+export const deleteMR = async (req, res) => {
+    try {
+        const { id } = req.body; 
+
+        // Check if the MR exists in the database
+        const mr = await MR.findById(id);
+        if (!mr) {
+            return res.status(404).json({ message: "MR not found" });
+        }
+
+        // If found, delete the MR
+        await MR.findByIdAndDelete(id);
+
+        res.status(200).json({ message: "MR deleted successfully" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Server error" });
+    }
+};
+
 
 
 // Create Admin (used only once)

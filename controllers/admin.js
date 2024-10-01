@@ -5,7 +5,9 @@ import ScheduleCall from "../models/ScheduleCall.js";
 // Get all MRs (for Admin Dashboard)
 export const getAllMRs = async (req, res) => {
     try {
-        const mrs = await MR.find({ role: 'mr', isArchived: false }).select('-password'); // Exclude passwords and archived MRs
+        const mrs = await MR.find({ role: 'mr', isArchived: false })
+        .select('-password')
+        .sort({ createdAt: -1 }); // Exclude passwords and archived MRs
         res.status(200).json(mrs);
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });

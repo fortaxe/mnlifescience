@@ -3,7 +3,19 @@ import MR from "../models/MR.js";
 
 // Create Clinic/Lead Form Form
 export const createHospital = async (req, res) => {
-    const { hospitalName, doctorName, doctorNumber,speciality, pharmacyName, pharmacyNumber, grade, location, remarks,areaName, url } = req.body;
+    // Fetch the MR (Medical Representative) making the request
+    const mr = await MR.findById(req.user.id);
+
+    // Check if the MR exists
+    if (!mr) {
+        return res.status(404).json({ message: "MR not found. You cannot create hospitals." });
+    }
+
+    // Check if the MR is archived
+    if (mr.isArchived) {
+        return res.status(403).json({ message: "You are archived and cannot create hospitals." });
+    }
+    const { hospitalName, doctorName, doctorNumber, speciality, pharmacyName, pharmacyNumber, grade, location, remarks, areaName, url } = req.body;
 
     try {
         const existingDoctor = await Clinic.findOne({ doctorNumber });
@@ -35,8 +47,8 @@ export const createHospital = async (req, res) => {
 
         await clinic.save();
 
-         // Append the newly created clinic's ID to the MR's clinics array
-         await MR.findByIdAndUpdate(req.user.id, { $push: { clinics: clinic._id } });
+        // Append the newly created clinic's ID to the MR's clinics array
+        await MR.findByIdAndUpdate(req.user.id, { $push: { clinics: clinic._id } });
         res.status(201).json({ clinic });
     } catch (error) {
         console.log(error);
@@ -46,16 +58,22 @@ export const createHospital = async (req, res) => {
 
 // Get all clinics in user panel
 export const getAllClinics = async (req, res) => {
+    const mr = await MR.findById(req.user.id);
+
+    if (!mr) {
+        return res.status(404).json({ message: "MR not found." });
+    }
+
+    if (mr.isArchived) {
+        return res.status(403).json({ message: "You are archived" });
+    }
+
     try {
         // Fetch the MR document including the clinics array
         const mr = await MR.findById(req.user.id).populate({
             path: 'clinics',
             select: '-doctorWhatsAppContacted -pharmacyWhatsAppContacted' // Exclude these fields
         });
-
-        if (!mr) {
-            return res.status(404).json({ message: 'User not found' });
-        }
 
         // Return the clinics associated with the user
         res.status(200).json(mr.clinics);
@@ -66,25 +84,43 @@ export const getAllClinics = async (req, res) => {
 
 //Get Clinic in user panel
 export const getHospital = async (req, res) => {
+    const mr = await MR.findById(req.user.id);
+
+    if (!mr) {
+        return res.status(404).json({ message: "MR not found." });
+    }
+
+    if (mr.isArchived) {
+        return res.status(403).json({ message: "You are archived" });
+    }
     try {
         // Find the clinic by its ID
         const { id } = req.params;
 
         const clinic = await Clinic.findById(id).select('-doctorWhatsAppContacted -pharmacyWhatsAppContacted');
-    
+
         if (!clinic) {
-            return res.status(401).json({ msg: "Doctor not found!"})
+            return res.status(401).json({ msg: "Doctor not found!" })
         }
 
         // Return the clinic data
         return res.status(200).json(clinic);
     } catch (error) {
-        return res.status(500).json({ message: "Server Error"})
+        return res.status(500).json({ message: "Server Error" })
     }
 }
 
 //Edit Clinic in user panel
 export const editHospital = async (req, res) => {
+    const mr = await MR.findById(req.user.id);
+
+    if (!mr) {
+        return res.status(404).json({ message: "MR not found." });
+    }
+
+    if (mr.isArchived) {
+        return res.status(403).json({ message: "You are archived" });
+    }
     const { hospitalName, doctorName, doctorNumber, pharmacyName, pharmacyNumber, grade, speciality, remarks, areaName } = req.body;
     const { id } = req.params;
 
@@ -132,6 +168,14 @@ export const editHospital = async (req, res) => {
 
 // Add a follow-up to a clinic
 export const addFollowUp = async (req, res) => {
+    const mr = await MR.findById(req.user.id);
+    if (!mr) {
+        return res.status(404).json({ message: "MR not found" });
+    }
+
+    if (mr.isArchived) {
+        return res.status(403).json({ message: "You are archived" });
+    }
     const { remarks, url } = req.body;
     const { id } = req.params;
 
