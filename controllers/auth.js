@@ -222,19 +222,17 @@ export const archiveMR = async (req, res) => {
 export const unarchiveMR = async (req, res) => {
     try {
         const { id } = req.body;
-
-        // Find MR by ID and unarchive it (set isArchived to false)
-        const unarchivedMR = await MR.findByIdAndUpdate(
-            id,
-            { isArchived: false },
-            { new: true }
-        );
-
-        if (!unarchivedMR) {
-            return res.status(404).send("MR not found");
+        // Find the MR by ID and update its archived status (assuming there's an 'archived' field)
+        const mr = await MR.findById(id);
+        if (!mr) {
+            return res.status(404).json({ message: "MR not found" });
         }
 
-        res.status(200).send("MR unarchived successfully");
+        // Set the MR as unarchived
+        mr.isArchived = false;
+        await mr.save();
+
+        res.status(200).send({ message: "MR unarchived successfully", id: mr._id });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -259,7 +257,7 @@ export const getArchivedMRs = async (req, res) => {
 // Delete MR
 export const deleteMR = async (req, res) => {
     try {
-        const { id } = req.body; 
+        const { id } = req.body;
 
         // Check if the MR exists in the database
         const mr = await MR.findById(id);
@@ -270,7 +268,7 @@ export const deleteMR = async (req, res) => {
         // If found, delete the MR
         await MR.findByIdAndDelete(id);
 
-        res.status(200).json({ message: "MR deleted successfully" });
+        res.status(200).json({ message: "MR deleted successfully", id: mr._id });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Server error" });
@@ -384,7 +382,7 @@ export const editPanCard = async (req, res) => {
         }
 
         const updatedMR = await mr.save();
-        return res.status(200).json({ 
+        return res.status(200).json({
             message: 'PAN card updated successfully',
             updatedMR: updatedMR
         });
