@@ -49,7 +49,7 @@ const clinicSchema = new mongoose.Schema({
     },
     followUps: [{
         followUpDate: { type: Date, default: Date.now },
-        remarks: { type: String, required: true },
+        remarks: { type: String },
         url: { type: String },
         followUpImage: { type: String },
     }],
