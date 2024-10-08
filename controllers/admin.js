@@ -142,23 +142,7 @@ export const editNotes = async (req, res) => {
     }
 }
 
-export const adminDeleteClinic = async (req, res) => {
-    try {
-        const { id } = req.body;
 
-          // Use findOneAndDelete instead of findByIdAndDelete
-          const deletedClinic = await Clinic.findByIdAndDelete(id);
-
-        if (!deletedClinic) {
-            return res.status(404).send('Doctor not found');
-        }
-
-        res.status(200).send('Doctor deleted successfully');
-    } catch (err) {
-        console.error('Error deleting doctor:', err);
-        res.status(500).json({ error: err.message });
-    }
-};
 
 export const archiveClinic = async (req, res) => {
     const { clinicId } = req.body;

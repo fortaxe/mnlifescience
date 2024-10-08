@@ -1,8 +1,9 @@
 import express from 'express';
-import { adminSignin, mrSignin, createMR, createAdmin, editMR, editAdmin, updateAadhaarCard, editPanCard, unarchiveMR, getArchivedMRs, archiveMR, deleteMR } from '../controllers/auth.js';
+import { adminSignin, mrSignin, createMR, createAdmin, editMR, editAdmin, updateAadhaarCard, editPanCard, unarchiveMR, getArchivedMRs, archiveMR } from '../controllers/auth.js';
 import authMiddleware from '../middleware/auth.js';
 import { uploadDocuments } from "../middleware/uploadDocuments.js";
 import { get } from "mongoose";
+import { deleteMR } from "../utils/cloudinary.js";
 
 const router = express.Router();
 

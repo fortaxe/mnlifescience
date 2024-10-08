@@ -1,5 +1,6 @@
 import express from 'express';
-import { getAllMRs, getAllClinics, adminEditClinic, getNotes, editNotes, adminDeleteClinic, getArchivedClinics, archiveClinic, unarchiveClinic } from '../controllers/admin.js';
+import { getAllMRs, getAllClinics, adminEditClinic, getNotes, editNotes, getArchivedClinics, archiveClinic, unarchiveClinic } from '../controllers/admin.js';
+import { adminDeleteClinic } from "../utils/cloudinary.js"
 import authMiddleware from '../middleware/auth.js';
 
 const router = express.Router();
