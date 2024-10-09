@@ -19,17 +19,17 @@ export const createHospital = async (req, res) => {
     const { hospitalName, doctorName, doctorNumber, speciality, pharmacyName, pharmacyNumber, grade, remarks, areaName, url } = req.body;
 
     try {
-        const existingDoctor = await Clinic.findOne({ doctorNumber });
-        if (existingDoctor) {
-            return res.status(400).json({ message: 'Doctor with this number already exists' });
-        }
+        // const existingDoctor = await Clinic.findOne({ doctorNumber });
+        // if (existingDoctor) {
+        //     return res.status(400).json({ message: 'Doctor with this number already exists' });
+        // }
 
-        if (pharmacyNumber) {
-            const existingPharmacy = await Clinic.findOne({ pharmacyNumber });
-            if (existingPharmacy) {
-                return res.status(400).json({ message: 'Pharmacy with this number already exists' });
-            }
-        }
+        // if (pharmacyNumber) {
+        //     const existingPharmacy = await Clinic.findOne({ pharmacyNumber });
+        //     if (existingPharmacy) {
+        //         return res.status(400).json({ message: 'Pharmacy with this number already exists' });
+        //     }
+        // }
 
         // Check if doctorImage is provided
         let doctorImage;
