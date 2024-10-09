@@ -10,8 +10,6 @@ const clinicSchema = new mongoose.Schema({
     },
     doctorNumber: {
         type: String,
-        unique: true,
-        sparse: true,
     },
     speciality: {
         type: String,
@@ -23,8 +21,6 @@ const clinicSchema = new mongoose.Schema({
     pharmacyName: String,
     pharmacyNumber: {
         type: String,
-        unique: true,
-        sparse: true,
     },
     pharmacyWhatsAppContacted: {
         type: Boolean,
