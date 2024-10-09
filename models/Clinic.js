@@ -7,12 +7,10 @@ const clinicSchema = new mongoose.Schema({
     },
     doctorName: {
         type: String,
-        required: true,
     },
     doctorNumber: {
         type: String,
         unique: true,
-        required: true,
     },
     speciality: {
         type: String,
