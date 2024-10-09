@@ -3,6 +3,9 @@ import MR from "../models/MR.js";
 
 // Create Clinic/Lead Form Form
 export const createHospital = async (req, res) => {
+  // Log the entire request body
+  console.log('Request Body:', req.body);
+   
     // Fetch the MR (Medical Representative) making the request
     const mr = await MR.findById(req.user.id);
 
@@ -18,12 +21,14 @@ export const createHospital = async (req, res) => {
 
     const { hospitalName, doctorName, doctorNumber, speciality, pharmacyName, pharmacyNumber, grade, remarks, areaName, url } = req.body;
 
+   
     try {
-        const existingDoctor = await Clinic.findOne({ doctorNumber });
-        if (existingDoctor) {
-            return res.status(400).json({ message: 'Doctor with this number already exists' });
+        if (doctorNumber) {
+            const existingDoctor = await Clinic.findOne({ doctorNumber });
+            if (existingDoctor) {
+                return res.status(400).json({ message: 'Doctor with this number already exists' });
+            }
         }
-
         if (pharmacyNumber) {
             const existingPharmacy = await Clinic.findOne({ pharmacyNumber });
             if (existingPharmacy) {
